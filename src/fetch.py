@@ -33,21 +33,16 @@ START_DATE = datetime.now() - timedelta(days=10)
 END_DATE = datetime.now()
 DATA_PATH = os.path.abspath(f"../data/{ymd_dash_format(END_DATE)}_portfolio_data.json")
 
-def main():
-    def fetch():
-        if not os.path.isfile(DATA_PATH):
-            print(f"Could not find file {DATA_PATH}; downloading data...")
-            series_list = [get_close_series(sym, mdy_slash_format(START_DATE), mdy_slash_format(END_DATE)) for sym in SYMBOLS]
-            df = (
-                pd.concat(series_list, axis=1)
-                .reset_index()
-                .rename(columns={"index": "date"})
-            )
-            df.to_json(DATA_PATH)
-            print(f"Successfully dumped JSON data to {DATA_PATH}!")
-        else:
-            print(f"File {DATA_PATH} already exists; skipping download")
-    fetch()
-
-if __name__ == "__main__":
-    main()
+def fetch():
+    if not os.path.isfile(DATA_PATH):
+        print(f"Could not find file {DATA_PATH}; downloading data...")
+        series_list = [get_close_series(sym, mdy_slash_format(START_DATE), mdy_slash_format(END_DATE)) for sym in SYMBOLS]
+        df = (
+            pd.concat(series_list, axis=1)
+            .reset_index()
+            .rename(columns={"index": "date"})
+        )
+        df.to_json(DATA_PATH)
+        print(f"Successfully dumped JSON data to {DATA_PATH}!")
+    else:
+        print(f"File {DATA_PATH} already exists; skipping download")
