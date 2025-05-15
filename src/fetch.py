@@ -29,7 +29,9 @@ def get_close_series(query_symbol, start, end):
     return s
 
 SYMBOLS = ["TVBETETF", "EPOL", "BGX"]
-START_DATE = datetime.now() - timedelta(days=10)
+TIME_WINDOW_DAYS = 70
+
+START_DATE = datetime.now() - timedelta(days=TIME_WINDOW_DAYS)
 END_DATE = datetime.now()
 DATA_PATH = os.path.abspath(f"../data/{ymd_dash_format(END_DATE)}_portfolio_data.json")
 
