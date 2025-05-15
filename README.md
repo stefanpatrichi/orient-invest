@@ -17,3 +17,7 @@ $ pip3.11 install -r requirements.txt
 ```
 
 Rulați fișierele Python cu `python3.11` (nu `python` sau `python3`).
+
+### Dataset
+Pentru a schimba parametri precum numărul de zile din *time window*, doar ștergeți fișierul din `json` din `data`; el se va
+redescărca automat la rularea programului.
