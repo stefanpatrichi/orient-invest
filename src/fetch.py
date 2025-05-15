@@ -28,8 +28,14 @@ def get_close_series(query_symbol, start, end):
     
     return s
 
+def sort_indices_by_date(idx: pd.Index):
+    if pd.api.types.is_integer_dtype(idx):
+        return pd.to_datetime(idx, unit="ms")
+    else:                                
+        return pd.to_datetime(idx)
+    
 SYMBOLS = ["TVBETETF", "EPOL", "BGX"]
-TIME_WINDOW_DAYS = 70
+TIME_WINDOW_DAYS = 3100
 
 START_DATE = datetime.now() - timedelta(days=TIME_WINDOW_DAYS)
 END_DATE = datetime.now()
@@ -41,6 +47,7 @@ def fetch():
         series_list = [get_close_series(sym, mdy_slash_format(START_DATE), mdy_slash_format(END_DATE)) for sym in SYMBOLS]
         df = (
             pd.concat(series_list, axis=1)
+            .sort_index(key=sort_indices_by_date)
             .reset_index()
             .rename(columns={"index": "date"})
         )
