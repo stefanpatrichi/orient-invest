@@ -11,7 +11,9 @@ if __name__ == "__main__":
 
     # s-ar putea sa fie un pic belite folderele nu stiu sigur
     df = pd.read_json(DATA_PATH)
-    
+    # linia asta e pentru mine ca nu-mi merge fetch-ul 🤗🤗🤗
+    #df = pd.read_json("../data/" + os.listdir("../data/")[0])
+
     # df preprocessing: drop date column, interpolate missing values
     df = df.drop(columns="date")
     for col in df.columns:
@@ -21,9 +23,9 @@ if __name__ == "__main__":
 
     model = Model(window_size=200, step=100)
 
-    allocations, roi, sharpe = model.fit_predict(df)
+    allocations, roi_individual, roi, sharpe = model.fit_predict(df)
 
     print(allocations)
-    print(roi)
-    print(f"Return on investment for the last window: {roi.sum()}")
+    print(roi_individual)
+    print(f"Return on investment for the last window: {roi}")
     print(f"Sharpe for the last window: {sharpe}")
