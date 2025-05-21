@@ -6,7 +6,6 @@ from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLRO
 import tensorflow.keras.backend as K # type: ignore
 import pandas as pd
 
-# set seeds for reproducibility
 def set_seeds(seed=123):
     np.random.seed(seed)
     tf.random.set_seed(seed)
@@ -17,11 +16,10 @@ class Model:
         set_seeds(seed)
         self.window_size = window_size
         self.step = step
-        self.data = None       # tensor of price data for loss computation
+        self.data = None
         self.model = None
 
     def __build_model(self, input_shape, outputs):
-        # LSTM with regularization
         model = Sequential([
             LSTM(32, input_shape=input_shape, dropout=0.2, recurrent_dropout=0.2,
                  kernel_regularizer=tf.keras.regularizers.l2(1e-4)),
@@ -30,14 +28,13 @@ class Model:
         ])
 
         def sharpe_loss(_, y_pred):
-            # normalize prices to start at 1
             data = tf.divide(self.data, self.data[0])  # shape: (window_size, assets)
             # broadcast y_pred (1, assets) across time axis
             port_vals = tf.reduce_sum(data * y_pred[0], axis=1)
-            # daily returns
+
             #returns = (port_vals[1:] - port_vals[:-1]) / (port_vals[:-1] + 1e-8)
             returns = (port_vals[1:] - port_vals[:-1]) / port_vals[:-1]
-            # sharpe ratio
+
             #sharpe = K.mean(returns) / (K.std(returns) + 1e-6)
             sharpe = K.mean(returns) / K.std(returns)
             return -sharpe
@@ -52,21 +49,17 @@ class Model:
         return np.stack(X)  # shape: (num_windows, window_size, features)
 
     def fit_predict(self, price_df: pd.DataFrame):
-        # prepare data: prices and returns
         prices = price_df.values[1:]
         rets = price_df.pct_change().values[1:]
         data_w_ret = np.concatenate([prices, rets], axis=1)
 
-        # create sliding windows
         X = self._make_windows(data_w_ret)
-        # use last window's raw prices for final loss/predict
         last_prices = price_df.values[-self.window_size:]
         self.data = tf.cast(tf.constant(last_prices), tf.float32)
 
         # dummy targets
         y = np.zeros((len(X), price_df.shape[1]))
 
-        # train/validation split
         split = int(0.9 * len(X))
         X_train, X_val = X[:split], X[split:]
         y_train, y_val = y[:split], y[split:]
@@ -77,12 +70,10 @@ class Model:
                 outputs=price_df.shape[1]
             )
 
-        # callbacks
         early_stop = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
         reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=3)
         checkpoint = ModelCheckpoint('best_model.h5', save_best_only=True, monitor='val_loss')
 
-        # fit with batch_size=1 to match price history dims
         self.model.fit(
             X_train, y_train,
             validation_data=(X_val, y_val),
@@ -92,7 +83,6 @@ class Model:
             callbacks=[early_stop, reduce_lr, checkpoint]
         )
 
-        # predict on the last window
         last_window = X[-1:]
         weights = self.model.predict(last_window, batch_size=1)[0]
 
