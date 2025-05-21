@@ -60,7 +60,7 @@ class Model:
         # dummy targets
         y = np.zeros((len(X), price_df.shape[1]))
 
-        split = int(0.9 * len(X))
+        split = int(0.8 * len(X))
         X_train, X_val = X[:split], X[split:]
         y_train, y_val = y[:split], y[split:]
 
@@ -86,4 +86,11 @@ class Model:
         last_window = X[-1:]
         weights = self.model.predict(last_window, batch_size=1)[0]
 
-        return weights
+        # calculate return on investment
+        roi = (price_df.values[-1] * weights - price_df.values[-self.window_size] * weights) / (price_df.values[-self.window_size] * weights)
+
+        # calculate sharpe
+        y_pred = tf.constant(weights[np.newaxis, :], dtype=tf.float32)
+        sharpe = -self.model.loss(None, y_pred)
+
+        return weights, roi, sharpe

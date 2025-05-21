@@ -21,6 +21,9 @@ if __name__ == "__main__":
 
     model = Model(window_size=200, step=100)
 
-    allocations, annual_stats = model.fit_predict(df)
+    allocations, roi, sharpe = model.fit_predict(df)
 
     print(allocations)
+    print(roi)
+    print(f"Return on investment for the last window: {roi.sum()}")
+    print(f"Sharpe for the last window: {sharpe}")
