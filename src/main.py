@@ -7,6 +7,7 @@ if __name__ == "__main__":
     #fetch()
     # tot nu-mi merge fetch-ul 😭😭
 
+    # s-ar putea sa fie un pic belite folderele nu stiu sigur
     df = pd.read_json("orient-invest/data/" + os.listdir("orient-invest/data")[0])
     
     # df preprocessing: drop date column, interpolate missing values
