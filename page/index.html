@@ -227,99 +227,50 @@
 				box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
 			}
 
-			.checkbox-section {
+			.etf-list-container {
 				margin-top: 40px;
 				padding: 30px 20px;
 				background-color: #1a2c43;
 				border-radius: 16px;
-				text-align: left;
+				text-align: center;
 			}
 
-			.checkbox-section h2 {
+			.etf-list-container h2 {
 				margin-bottom: 20px;
 				color: var(--accent-color);
-				text-align: center;
 				font-weight: 700;
 				font-size: 1.5rem;
 			}
 
-			.checkbox-section label {
-				display: block;
-				margin-bottom: 10px;
-				font-weight: 500;
-				cursor: pointer;
-			}
-
-			/* Stilizare pentru containerul slider-ului */
-			.risk-slider-container {
-				margin-top: 40px;
-				margin-bottom: 40px;
-				padding: 30px 20px;
-				background-color: #1a2c43;
-				border-radius: 16px;
-				text-align: center;
-				color: var(--accent-color);
-				font-weight: 700;
-			}
-
-			.risk-slider-container label {
+			.etf-list-container select {
 				margin-bottom: 20px;
-				font-size: 1.5rem;
-				font-weight: 700;
-				color: var(--accent-color);
-				text-align: center;
-				display: block;
 			}
 
-			.slider-wrapper {
+			.selected-etfs {
+				margin-top: 20px;
+				display: flex;
+				flex-wrap: wrap;
+				gap: 10px;
+				justify-content: center;
+			}
+
+			.etf-tag {
+				background-color: #334155;
+				padding: 10px 15px;
+				border-radius: 20px;
 				display: flex;
 				align-items: center;
-				justify-content: center;
-				gap: 15px;
+				gap: 10px;
+				color: white;
 			}
 
-			input[type="range"] {
-				-webkit-appearance: none;
-				width: 70%;
-				height: 8px;
-				border-radius: 5px;
-				background: #334155;
-				outline: none;
+			.etf-tag button {
+				background: transparent;
+				border: none;
+				color: red;
 				cursor: pointer;
-				transition: background 0.3s ease;
-			}
-
-			input[type="range"]:hover {
-				background: #4a627c;
-			}
-
-			input[type="range"]::-webkit-slider-thumb {
-				-webkit-appearance: none;
-				appearance: none;
-				width: 22px;
-				height: 22px;
-				border-radius: 50%;
-				background: var(--accent-color);
-				cursor: pointer;
-				border: 2px solid #fff;
-				transition: background 0.3s ease;
-				margin-top: -7px; /* center thumb vertically */
-			}
-
-			input[type="range"]::-moz-range-thumb {
-				width: 22px;
-				height: 22px;
-				border-radius: 50%;
-				background: var(--accent-color);
-				cursor: pointer;
-				border: 2px solid #fff;
-				transition: background 0.3s ease;
-			}
-
-			#risk-value {
-				min-width: 30px;
-				font-size: 1.2rem;
-				color: #fff;
+				font-size: 1rem;
+				font-weight: bold;
 			}
 
 			footer {
@@ -343,7 +294,7 @@
 	<body>
 		<header>
 			<div class="logo">
-				<a href="#" style="text-decoration: none; color: inherit">
+				<a href="#">
 					<h1>Orient Invest</h1>
 					<p>Investește inteligent în ETF-uri</p>
 				</a>
@@ -367,19 +318,17 @@
 				<div class="mobile-menu-footer">© 2025 Orient Invest</div>
 			</nav>
 		</header>
-
 		<main>
 			<section>
 				<div class="slogan">Construim împreună viitorul tău financiar</div>
 				<div class="description">
 					Orient Invest folosește inteligență artificială pentru a calcula
 					automat ponderea ideală a ETF-urilor în portofoliul tău, pe baza
-					preferințelor tale. Selectezi ETF-urile dorite, iar AI-ul nostru îți
-					oferă o strategie echilibrată și optimizată.
+					preferințelor tale.
 				</div>
 
 				<div class="dropdown-container">
-					<label for="etf-select">Selectează un ETF:</label>
+					<label for="etf-select">Selectează un ETF pentru grafic:</label>
 					<select id="etf-select" onchange="updateImage()">
 						<option value="etf1">ETF Tehnologie - Placeholder</option>
 						<option value="etf2">ETF Energie - Placeholder</option>
@@ -390,45 +339,16 @@
 				<img id="etf-chart" src="chart1.png" alt="Graficul ETF-ului selectat" />
 			</section>
 
-			<section class="checkbox-section">
-				<h2>Selectează ETF-urile pentru portofoliul tău:</h2>
-				<label
-					><input type="checkbox" name="etf" value="etf1" /> ETF Tehnologie -
-					Placeholder</label
-				>
-				<label
-					><input type="checkbox" name="etf" value="etf2" /> ETF Energie -
-					Placeholder</label
-				>
-				<label
-					><input type="checkbox" name="etf" value="etf3" /> ETF Sustenabilitate
-					- Placeholder</label
-				>
-				<label
-					><input type="checkbox" name="etf" value="etf4" /> ETF Europa -
-					Placeholder</label
-				>
-				<label
-					><input type="checkbox" name="etf" value="etf5" /> ETF S&P 500 -
-					Placeholder</label
-				>
-			</section>
-
-			<!-- Slider mutat după checkbox-uri -->
-			<section class="risk-slider-container">
-				<label for="risk-slider">Toleranță la risc:</label>
-				<div class="slider-wrapper">
-					<input
-						type="range"
-						id="risk-slider"
-						min="10"
-						max="100"
-						step="10"
-						value="10"
-						oninput="document.getElementById('risk-value').textContent = this.value + '%'"
-					/>
-					<span id="risk-value">10%</span>
-				</div>
+			<section class="etf-list-container">
+				<h2>Selectează ETF-uri pentru portofoliu:</h2>
+				<select id="etf-dropdown">
+					<option value="etf1">ETF Tehnologie - Placeholder</option>
+					<option value="etf2">ETF Energie - Placeholder</option>
+					<option value="etf3">ETF Sustenabilitate - Placeholder</option>
+					<option value="etf4">ETF Europa - Placeholder</option>
+					<option value="etf5">ETF S&P 500 - Placeholder</option>
+				</select>
+				<div class="selected-etfs" id="selected-etfs"></div>
 			</section>
 		</main>
 
@@ -454,6 +374,30 @@
 			function toggleMenu() {
 				const menu = document.getElementById("mobileMenu");
 				menu.classList.toggle("open");
+			}
+
+			const dropdown = document.getElementById("etf-dropdown");
+			const selectedEtfsContainer = document.getElementById("selected-etfs");
+
+			dropdown.addEventListener("change", () => {
+				const value = dropdown.value;
+				const label = dropdown.options[dropdown.selectedIndex].text;
+
+				if (!document.getElementById(value)) {
+					const tag = document.createElement("div");
+					tag.className = "etf-tag";
+					tag.id = value;
+					tag.innerHTML = `
+            ${label}
+            <button onclick="removeEtf('${value}')">X</button>
+          `;
+					selectedEtfsContainer.appendChild(tag);
+				}
+			});
+
+			function removeEtf(id) {
+				const tag = document.getElementById(id);
+				if (tag) tag.remove();
 			}
 		</script>
 	</body>
