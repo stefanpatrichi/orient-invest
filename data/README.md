@@ -1,0 +1,1 @@
+Aici se vor salva fișierele `.json` cu datele luate de pe Yahoo Finance.
