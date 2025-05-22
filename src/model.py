@@ -21,10 +21,9 @@ class Model:
 
     def __build_model(self, input_shape, outputs):
         model = Sequential([
-            LSTM(32, input_shape=input_shape, dropout=0.2, recurrent_dropout=0.2,
-                 kernel_regularizer=tf.keras.regularizers.l2(1e-4)),
+            LSTM(64, input_shape=input_shape, dropout=0.2, recurrent_dropout=0.2),
             Flatten(),
-            Dense(outputs, activation='softmax', kernel_regularizer=tf.keras.regularizers.l2(1e-4))
+            Dense(outputs, activation='softmax')
         ])
 
         def sharpe_loss(_, y_pred):
@@ -60,7 +59,7 @@ class Model:
         # dummy targets
         y = np.zeros((len(X), price_df.shape[1]))
 
-        split = int(0.8 * len(X))
+        split = int(0.9 * len(X))
         X_train, X_val = X[:split], X[split:]
         y_train, y_val = y[:split], y[split:]
 
@@ -80,7 +79,7 @@ class Model:
             epochs=50,
             batch_size=1,
             shuffle=False,
-            callbacks=[early_stop, reduce_lr, checkpoint]
+            callbacks=[early_stop, reduce_lr]
         )
 
         last_window = X[-1:]
