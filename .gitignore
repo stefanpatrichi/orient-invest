@@ -174,4 +174,4 @@ cython_debug/
 .pypirc
 
 .h5
-# .json pe viitor da momentan nu i merge lui tegalau fetchul
+.json

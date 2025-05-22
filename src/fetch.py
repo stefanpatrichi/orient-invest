@@ -26,7 +26,7 @@ def sort_indices_by_date(idx):
 
 # ---------- market-data fetchers -------------------------------------------
 
-def get_fx(currency, start, end):
+def get_fx_series(currency, start, end):
     pair_ticker = f"EUR{currency}=X"
     fx = yf.download(pair_ticker, start=start, end=end, progress=False)["Close"]
 
@@ -51,7 +51,7 @@ def get_close_series(query_symbol, start, end):
     closes.name = f"{ticker}_close"
 
     if query_symbol["currency"] != "EUR":
-        fx = get_fx(query_symbol["currency"], start, end)
+        fx = get_fx_series(query_symbol["currency"], start, end)
         fx = fx.reindex(closes.index)
         closes = closes / fx.values
 
@@ -71,7 +71,7 @@ SYMBOLS = [
     {"name": "GREK",        "currency": "USD"},
     {"name": "PLX.DE",      "currency": "EUR"},
 ]
-
+CURRENCIES_NONEUR = ["RON", "USD"]
 TIME_WINDOW_DAYS = 4000
 START_DATE = datetime.now() - timedelta(days=TIME_WINDOW_DAYS)
 END_DATE = datetime.now()
@@ -86,17 +86,15 @@ def fetch():
         return
 
     log(f"Could not find file {DATA_PATH}; downloading data...")
-    series_list = [
-        get_close_series(sym, START_DATE, END_DATE) for sym in SYMBOLS
-    ]
+    series_list = [get_close_series(sym, START_DATE, END_DATE) for sym in SYMBOLS]
+    series_list += [get_fx_series(crcy, START_DATE, END_DATE) for crcy in CURRENCIES_NONEUR]
 
     df = (
         pd.concat(series_list, axis=1)
         .sort_index(key=sort_indices_by_date)
         .reset_index()
-        .rename(columns={"index": "date"})
+        .rename(columns={"index": "Date"})
     )
-#   print(df)
     df["Date"] = df["Date"].apply(mdy_slash_format)
 
     df.to_json(DATA_PATH)

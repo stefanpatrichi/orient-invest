@@ -15,8 +15,7 @@ if __name__ == "__main__":
     df = df.drop(columns="Date")
     for col in df.columns:
         df[col] = df[col].interpolate()
-    df.fillna(1e-6, inplace=True)
-    print(df)
+    df.bfill(inplace=True)
 
     model = Model(window_size=200, step=100)
 
