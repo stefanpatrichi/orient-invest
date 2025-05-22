@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="ro">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Orient Invest</title>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+			rel="stylesheet"
+		/>
+		<style>
+			:root {
+				--primary-color: #0d1b2a;
+				--secondary-color: #1b263b;
+				--accent-color: #00b4d8;
+				--text-color: #f8f9fa;
+			}
+
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+
+			body {
+				font-family: "Inter", sans-serif;
+				background-color: var(--primary-color);
+				color: var(--text-color);
+				line-height: 1.6;
+			}
+
+			header {
+				background-color: var(--secondary-color);
+				padding: 20px 40px;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				flex-wrap: wrap;
+				position: sticky;
+				top: 0;
+				z-index: 1001;
+			}
+
+			.logo a {
+				display: flex;
+				flex-direction: column;
+				align-items: flex-start;
+				text-decoration: none;
+				color: inherit;
+			}
+
+			.logo h1 {
+				font-size: 2rem;
+				color: var(--accent-color);
+			}
+
+			.logo p {
+				font-size: 1rem;
+				margin-top: 5px;
+				color: #ccc;
+			}
+
+			nav.desktop-menu {
+				display: flex;
+				gap: 20px;
+			}
+
+			nav a {
+				color: var(--text-color);
+				text-decoration: none;
+				font-weight: 600;
+				transition: color 0.3s;
+				position: relative;
+				padding-right: 20px;
+			}
+
+			nav a:hover {
+				color: var(--accent-color);
+			}
+
+			nav a::after {
+				content: "›";
+				position: absolute;
+				right: 0;
+				top: 50%;
+				transform: translateY(-50%);
+				color: var(--accent-color);
+				font-weight: 700;
+				font-size: 1.2rem;
+				transition: color 0.3s;
+			}
+
+			nav a:hover::after {
+				color: #00e0ff;
+			}
+
+			.menu-toggle {
+				display: none;
+				flex-direction: column;
+				cursor: pointer;
+				z-index: 1002;
+			}
+
+			.menu-toggle span {
+				height: 3px;
+				width: 25px;
+				background-color: var(--text-color);
+				margin: 4px 0;
+			}
+
+			nav.mobile-menu {
+				flex-direction: column;
+				background-color: var(--secondary-color);
+				position: fixed;
+				top: 0;
+				right: 0;
+				width: 250px;
+				height: 100vh;
+				padding: 120px 20px 60px;
+				z-index: 1000;
+				transform: translateX(100%);
+				transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+				opacity: 0;
+				pointer-events: none;
+				display: flex;
+				justify-content: flex-start;
+			}
+
+			nav.mobile-menu.open {
+				transform: translateX(0);
+				opacity: 1;
+				pointer-events: auto;
+			}
+
+			nav.mobile-menu a {
+				margin-bottom: 20px;
+				font-size: 1.4rem;
+				padding: 12px 0;
+				user-select: none;
+				position: relative;
+				padding-right: 20px;
+				transition: color 0.3s;
+			}
+
+			nav.mobile-menu a::after {
+				content: "›";
+				position: absolute;
+				right: 0;
+				top: 50%;
+				transform: translateY(-50%);
+				color: var(--accent-color);
+				font-weight: 700;
+				font-size: 1.4rem;
+				transition: color 0.3s;
+			}
+
+			nav.mobile-menu a:hover::after {
+				color: #00e0ff;
+			}
+
+			nav.mobile-menu a:hover {
+				color: var(--accent-color);
+			}
+
+			.mobile-menu-footer {
+				margin-top: auto;
+				padding-top: 10px;
+				border-top: 1px solid #334155;
+				color: #888;
+				font-size: 0.9rem;
+				text-align: center;
+				user-select: none;
+			}
+
+			main {
+				max-width: 1000px;
+				margin: 40px auto;
+				padding: 20px;
+				background-color: #112031;
+				border-radius: 16px;
+				box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+				text-align: center;
+			}
+
+			.slogan {
+				font-size: 2.4rem;
+				color: var(--accent-color);
+				font-weight: 700;
+				margin-bottom: 20px;
+			}
+
+			.description {
+				font-size: 1.2rem;
+				color: #d0d0d0;
+				margin-bottom: 40px;
+				max-width: 800px;
+				margin-left: auto;
+				margin-right: auto;
+			}
+
+			.dropdown-container {
+				text-align: center;
+				margin-bottom: 30px;
+			}
+
+			label {
+				font-weight: 600;
+				display: block;
+				margin-bottom: 10px;
+				text-align: center;
+			}
+
+			select {
+				padding: 10px;
+				font-size: 1rem;
+				width: auto;
+				background-color: var(--secondary-color);
+				color: var(--text-color);
+				border: 1px solid #334155;
+				border-radius: 8px;
+				text-align-last: center;
+			}
+
+			img {
+				max-width: 100%;
+				border-radius: 12px;
+				box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+			}
+
+			.etf-list-container {
+				margin-top: 40px;
+				padding: 30px 20px;
+				background-color: #1a2c43;
+				border-radius: 16px;
+				text-align: center;
+			}
+
+			.etf-list-container h2 {
+				margin-bottom: 20px;
+				color: var(--accent-color);
+				font-weight: 700;
+				font-size: 1.5rem;
+			}
+
+			.etf-list-container select {
+				margin-bottom: 20px;
+			}
+
+			.selected-etfs {
+				margin-top: 20px;
+				display: flex;
+				flex-wrap: wrap;
+				gap: 10px;
+				justify-content: center;
+			}
+
+			.etf-tag {
+				background-color: #334155;
+				padding: 10px 15px;
+				border-radius: 20px;
+				display: flex;
+				align-items: center;
+				gap: 10px;
+				color: white;
+			}
+
+			.etf-tag button {
+				background: transparent;
+				border: none;
+				color: red;
+				cursor: pointer;
+				font-size: 1rem;
+				font-weight: bold;
+			}
+
+			footer {
+				padding: 20px 0;
+				text-align: center;
+				color: #ccc;
+				font-size: 0.9rem;
+			}
+
+			@media (max-width: 768px) {
+				nav.desktop-menu {
+					display: none;
+				}
+
+				.menu-toggle {
+					display: flex;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<header>
+			<div class="logo">
+				<a href="#">
+					<h1>Orient Invest</h1>
+					<p>Investește inteligent în ETF-uri</p>
+				</a>
+			</div>
+			<div class="menu-toggle" onclick="toggleMenu()">
+				<span></span>
+				<span></span>
+				<span></span>
+			</div>
+			<nav class="desktop-menu">
+				<a href="#">Home</a>
+				<a href="#">Despre noi</a>
+				<a href="#">Servicii</a>
+				<a href="#">Contact</a>
+			</nav>
+			<nav class="mobile-menu" id="mobileMenu">
+				<a href="#">Home</a>
+				<a href="#">Despre noi</a>
+				<a href="#">Servicii</a>
+				<a href="#">Contact</a>
+				<div class="mobile-menu-footer">© 2025 Orient Invest</div>
+			</nav>
+		</header>
+		<main>
+			<section>
+				<div class="slogan">Construim împreună viitorul tău financiar</div>
+				<div class="description">
+					Orient Invest folosește inteligență artificială pentru a calcula
+					automat ponderea ideală a ETF-urilor în portofoliul tău, pe baza
+					preferințelor tale.
+				</div>
+
+				<div class="dropdown-container">
+					<label for="etf-select">Selectează un ETF pentru grafic:</label>
+					<select id="etf-select" onchange="updateImage()">
+						<option value="etf1">ETF Tehnologie - Placeholder</option>
+						<option value="etf2">ETF Energie - Placeholder</option>
+						<option value="etf3">ETF Sustenabilitate - Placeholder</option>
+					</select>
+				</div>
+
+				<img id="etf-chart" src="chart1.png" alt="Graficul ETF-ului selectat" />
+			</section>
+
+			<section class="etf-list-container">
+				<h2>Selectează ETF-uri pentru portofoliu:</h2>
+				<select id="etf-dropdown">
+					<option value="etf1">ETF Tehnologie - Placeholder</option>
+					<option value="etf2">ETF Energie - Placeholder</option>
+					<option value="etf3">ETF Sustenabilitate - Placeholder</option>
+					<option value="etf4">ETF Europa - Placeholder</option>
+					<option value="etf5">ETF S&P 500 - Placeholder</option>
+				</select>
+				<div class="selected-etfs" id="selected-etfs"></div>
+			</section>
+		</main>
+
+		<footer>
+			<p>© 2025 Orient Invest. Toate drepturile rezervate.</p>
+		</footer>
+
+		<script>
+			function updateImage() {
+				const select = document.getElementById("etf-select");
+				const chart = document.getElementById("etf-chart");
+				const selected = select.value;
+
+				const imageMap = {
+					etf1: "chart1.png",
+					etf2: "chart2.png",
+					etf3: "chart3.png",
+				};
+
+				chart.src = imageMap[selected];
+			}
+
+			function toggleMenu() {
+				const menu = document.getElementById("mobileMenu");
+				menu.classList.toggle("open");
+			}
+
+			const dropdown = document.getElementById("etf-dropdown");
+			const selectedEtfsContainer = document.getElementById("selected-etfs");
+
+			dropdown.addEventListener("change", () => {
+				const value = dropdown.value;
+				const label = dropdown.options[dropdown.selectedIndex].text;
+
+				if (!document.getElementById(value)) {
+					const tag = document.createElement("div");
+					tag.className = "etf-tag";
+					tag.id = value;
+					tag.innerHTML = `
+            ${label}
+            <button onclick="removeEtf('${value}')">X</button>
+          `;
+					selectedEtfsContainer.appendChild(tag);
+				}
+			});
+
+			function removeEtf(id) {
+				const tag = document.getElementById(id);
+				if (tag) tag.remove();
+			}
+		</script>
+	</body>
+</html>
