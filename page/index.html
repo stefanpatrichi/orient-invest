@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="ro">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Orient Invest</title>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+			rel="stylesheet"
+		/>
+		<style>
+			:root {
+				--primary-color: #0d1b2a;
+				--secondary-color: #1b263b;
+				--accent-color: #00b4d8;
+				--text-color: #f8f9fa;
+			}
+
+			* {
+				margin: 0;
+				padding: 0;
+				box-sizing: border-box;
+			}
+
+			body {
+				font-family: "Inter", sans-serif;
+				background-color: var(--primary-color);
+				color: var(--text-color);
+				line-height: 1.6;
+			}
+
+			header {
+				background-color: var(--secondary-color);
+				padding: 20px 40px;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				flex-wrap: wrap;
+				position: sticky;
+				top: 0;
+				z-index: 1001;
+			}
+
+			.logo a {
+				display: flex;
+				flex-direction: column;
+				align-items: flex-start;
+				text-decoration: none;
+				color: inherit;
+			}
+
+			.logo h1 {
+				font-size: 2rem;
+				color: var(--accent-color);
+			}
+
+			.logo p {
+				font-size: 1rem;
+				margin-top: 5px;
+				color: #ccc;
+			}
+
+			nav.desktop-menu {
+				display: flex;
+				gap: 20px;
+			}
+
+			nav a {
+				color: var(--text-color);
+				text-decoration: none;
+				font-weight: 600;
+				transition: color 0.3s;
+				position: relative;
+				padding-right: 20px;
+			}
+
+			nav a:hover {
+				color: var(--accent-color);
+			}
+
+			nav a::after {
+				content: "›";
+				position: absolute;
+				right: 0;
+				top: 50%;
+				transform: translateY(-50%);
+				color: var(--accent-color);
+				font-weight: 700;
+				font-size: 1.2rem;
+				transition: color 0.3s;
+			}
+
+			nav a:hover::after {
+				color: #00e0ff;
+			}
+
+			.menu-toggle {
+				display: none;
+				flex-direction: column;
+				cursor: pointer;
+				z-index: 1002;
+			}
+
+			.menu-toggle span {
+				height: 3px;
+				width: 25px;
+				background-color: var(--text-color);
+				margin: 4px 0;
+			}
+
+			nav.mobile-menu {
+				flex-direction: column;
+				background-color: var(--secondary-color);
+				position: fixed;
+				top: 0;
+				right: 0;
+				width: 250px;
+				height: 100vh;
+				padding: 120px 20px 60px;
+				z-index: 1000;
+				transform: translateX(100%);
+				transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+				opacity: 0;
+				pointer-events: none;
+				display: flex;
+				justify-content: flex-start;
+			}
+
+			nav.mobile-menu.open {
+				transform: translateX(0);
+				opacity: 1;
+				pointer-events: auto;
+			}
+
+			nav.mobile-menu a {
+				margin-bottom: 20px;
+				font-size: 1.4rem;
+				padding: 12px 0;
+				user-select: none;
+				position: relative;
+				padding-right: 20px;
+				transition: color 0.3s;
+			}
+
+			nav.mobile-menu a::after {
+				content: "›";
+				position: absolute;
+				right: 0;
+				top: 50%;
+				transform: translateY(-50%);
+				color: var(--accent-color);
+				font-weight: 700;
+				font-size: 1.4rem;
+				transition: color 0.3s;
+			}
+
+			nav.mobile-menu a:hover::after {
+				color: #00e0ff;
+			}
+
+			nav.mobile-menu a:hover {
+				color: var(--accent-color);
+			}
+
+			.mobile-menu-footer {
+				margin-top: auto;
+				padding-top: 10px;
+				border-top: 1px solid #334155;
+				color: #888;
+				font-size: 0.9rem;
+				text-align: center;
+				user-select: none;
+			}
+
+			main {
+				max-width: 1000px;
+				margin: 40px auto;
+				padding: 20px;
+				background-color: #112031;
+				border-radius: 16px;
+				box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+				text-align: center;
+			}
+
+			.slogan {
+				font-size: 2.4rem;
+				color: var(--accent-color);
+				font-weight: 700;
+				margin-bottom: 20px;
+			}
+
+			.description {
+				font-size: 1.2rem;
+				color: #d0d0d0;
+				margin-bottom: 40px;
+				max-width: 800px;
+				margin-left: auto;
+				margin-right: auto;
+			}
+
+			.dropdown-container {
+				text-align: center;
+				margin-bottom: 30px;
+			}
+
+			label {
+				font-weight: 600;
+				display: block;
+				margin-bottom: 10px;
+				text-align: center;
+			}
+
+			select {
+				padding: 10px;
+				font-size: 1rem;
+				width: auto;
+				background-color: var(--secondary-color);
+				color: var(--text-color);
+				border: 1px solid #334155;
+				border-radius: 8px;
+				text-align-last: center;
+			}
+
+			img {
+				max-width: 100%;
+				border-radius: 12px;
+				box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+			}
+
+			.checkbox-section {
+				margin-top: 40px;
+				padding: 30px 20px;
+				background-color: #1a2c43;
+				border-radius: 16px;
+				text-align: left;
+			}
+
+			.checkbox-section h2 {
+				margin-bottom: 20px;
+				color: var(--accent-color);
+				text-align: center;
+				font-weight: 700;
+				font-size: 1.5rem;
+			}
+
+			.checkbox-section label {
+				display: block;
+				margin-bottom: 10px;
+				font-weight: 500;
+				cursor: pointer;
+			}
+
+			/* Stilizare pentru containerul slider-ului */
+			.risk-slider-container {
+				margin-top: 40px;
+				margin-bottom: 40px;
+				padding: 30px 20px;
+				background-color: #1a2c43;
+				border-radius: 16px;
+				text-align: center;
+				color: var(--accent-color);
+				font-weight: 700;
+			}
+
+			.risk-slider-container label {
+				margin-bottom: 20px;
+				font-size: 1.5rem;
+				font-weight: 700;
+				color: var(--accent-color);
+				text-align: center;
+				display: block;
+			}
+
+			.slider-wrapper {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				gap: 15px;
+			}
+
+			input[type="range"] {
+				-webkit-appearance: none;
+				width: 70%;
+				height: 8px;
+				border-radius: 5px;
+				background: #334155;
+				outline: none;
+				cursor: pointer;
+				transition: background 0.3s ease;
+			}
+
+			input[type="range"]:hover {
+				background: #4a627c;
+			}
+
+			input[type="range"]::-webkit-slider-thumb {
+				-webkit-appearance: none;
+				appearance: none;
+				width: 22px;
+				height: 22px;
+				border-radius: 50%;
+				background: var(--accent-color);
+				cursor: pointer;
+				border: 2px solid #fff;
+				transition: background 0.3s ease;
+				margin-top: -7px; /* center thumb vertically */
+			}
+
+			input[type="range"]::-moz-range-thumb {
+				width: 22px;
+				height: 22px;
+				border-radius: 50%;
+				background: var(--accent-color);
+				cursor: pointer;
+				border: 2px solid #fff;
+				transition: background 0.3s ease;
+			}
+
+			#risk-value {
+				min-width: 30px;
+				font-size: 1.2rem;
+				color: #fff;
+			}
+
+			footer {
+				padding: 20px 0;
+				text-align: center;
+				color: #ccc;
+				font-size: 0.9rem;
+			}
+
+			@media (max-width: 768px) {
+				nav.desktop-menu {
+					display: none;
+				}
+
+				.menu-toggle {
+					display: flex;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<header>
+			<div class="logo">
+				<a href="#" style="text-decoration: none; color: inherit">
+					<h1>Orient Invest</h1>
+					<p>Investește inteligent în ETF-uri</p>
+				</a>
+			</div>
+			<div class="menu-toggle" onclick="toggleMenu()">
+				<span></span>
+				<span></span>
+				<span></span>
+			</div>
+			<nav class="desktop-menu">
+				<a href="#">Home</a>
+				<a href="#">Despre noi</a>
+				<a href="#">Servicii</a>
+				<a href="#">Contact</a>
+			</nav>
+			<nav class="mobile-menu" id="mobileMenu">
+				<a href="#">Home</a>
+				<a href="#">Despre noi</a>
+				<a href="#">Servicii</a>
+				<a href="#">Contact</a>
+				<div class="mobile-menu-footer">© 2025 Orient Invest</div>
+			</nav>
+		</header>
+
+		<main>
+			<section>
+				<div class="slogan">Construim împreună viitorul tău financiar</div>
+				<div class="description">
+					Orient Invest folosește inteligență artificială pentru a calcula
+					automat ponderea ideală a ETF-urilor în portofoliul tău, pe baza
+					preferințelor tale. Selectezi ETF-urile dorite, iar AI-ul nostru îți
+					oferă o strategie echilibrată și optimizată.
+				</div>
+
+				<div class="dropdown-container">
+					<label for="etf-select">Selectează un ETF:</label>
+					<select id="etf-select" onchange="updateImage()">
+						<option value="etf1">ETF Tehnologie - Placeholder</option>
+						<option value="etf2">ETF Energie - Placeholder</option>
+						<option value="etf3">ETF Sustenabilitate - Placeholder</option>
+					</select>
+				</div>
+
+				<img id="etf-chart" src="chart1.png" alt="Graficul ETF-ului selectat" />
+			</section>
+
+			<section class="checkbox-section">
+				<h2>Selectează ETF-urile pentru portofoliul tău:</h2>
+				<label
+					><input type="checkbox" name="etf" value="etf1" /> ETF Tehnologie -
+					Placeholder</label
+				>
+				<label
+					><input type="checkbox" name="etf" value="etf2" /> ETF Energie -
+					Placeholder</label
+				>
+				<label
+					><input type="checkbox" name="etf" value="etf3" /> ETF Sustenabilitate
+					- Placeholder</label
+				>
+				<label
+					><input type="checkbox" name="etf" value="etf4" /> ETF Europa -
+					Placeholder</label
+				>
+				<label
+					><input type="checkbox" name="etf" value="etf5" /> ETF S&P 500 -
+					Placeholder</label
+				>
+			</section>
+
+			<!-- Slider mutat după checkbox-uri -->
+			<section class="risk-slider-container">
+				<label for="risk-slider">Toleranță la risc:</label>
+				<div class="slider-wrapper">
+					<input
+						type="range"
+						id="risk-slider"
+						min="10"
+						max="100"
+						step="10"
+						value="10"
+						oninput="document.getElementById('risk-value').textContent = this.value + '%'"
+					/>
+					<span id="risk-value">10%</span>
+				</div>
+			</section>
+		</main>
+
+		<footer>
+			<p>© 2025 Orient Invest. Toate drepturile rezervate.</p>
+		</footer>
+
+		<script>
+			function updateImage() {
+				const select = document.getElementById("etf-select");
+				const chart = document.getElementById("etf-chart");
+				const selected = select.value;
+
+				const imageMap = {
+					etf1: "chart1.png",
+					etf2: "chart2.png",
+					etf3: "chart3.png",
+				};
+
+				chart.src = imageMap[selected];
+			}
+
+			function toggleMenu() {
+				const menu = document.getElementById("mobileMenu");
+				menu.classList.toggle("open");
+			}
+		</script>
+	</body>
+</html>
