@@ -1,9 +1,9 @@
 
-from datetime import datetime, timedelta
 import os.path
 import numpy as np
 import pandas as pd
 import yfinance as yf
+from constants import *
 
 # ---------- helpers ---------------------------------------------------------
 
@@ -60,21 +60,21 @@ def get_close_series(query_symbol, start, end):
 
 # ---------- portfolio definition -------------------------------------------
 
-SYMBOLS = [
-    {"name": "TVBETETF.RO", "currency": "RON"},
-    {"name": "EPOL",        "currency": "USD"},
-    {"name": "IPOL.L",      "currency": "USD"},
-    {"name": "BGX.DE",      "currency": "EUR"},
-    {"name": "CEC.PA",      "currency": "EUR"},
-#   {"name": "ESTEG",       "currency": "EUR"}, nu l am gasit pe yfinance...
-    {"name": "TUR",         "currency": "USD"}, 
-    {"name": "GREK",        "currency": "USD"},
-    {"name": "PLX.DE",      "currency": "EUR"},
-]
-CURRENCIES_NONEUR = ["RON", "USD"]
-TIME_WINDOW_DAYS = 4000
-START_DATE = datetime.now() - timedelta(days=TIME_WINDOW_DAYS)
-END_DATE = datetime.now()
+# SYMBOLS = [
+#     {"name": "TVBETETF.RO", "currency": "RON"},
+#     {"name": "EPOL",        "currency": "USD"},
+#     {"name": "IPOL.L",      "currency": "USD"},
+#     {"name": "BGX.DE",      "currency": "EUR"},
+#     {"name": "CEC.PA",      "currency": "EUR"},
+# #   {"name": "ESTEG",       "currency": "EUR"}, nu l am gasit pe yfinance...
+#     {"name": "TUR",         "currency": "USD"}, 
+#     {"name": "GREK",        "currency": "USD"},
+#     {"name": "PLX.DE",      "currency": "EUR"},
+# ]
+# CURRENCIES_NONEUR = ["RON", "USD"]
+# TIME_WINDOW_DAYS = 4000
+# START_DATE = datetime.now() - timedelta(days=TIME_WINDOW_DAYS)
+# END_DATE = datetime.now()
 
 DATA_PATH = os.path.abspath(
     f"../data/{ymd_dash_format(END_DATE)}_portfolio_data.json"
