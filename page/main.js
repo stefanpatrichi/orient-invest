@@ -30,7 +30,7 @@ dropdown.addEventListener("change", () => {
         tag.id = value;
         tag.innerHTML = `
 ${label}
-<button onclick="removeEtf('${value}')">X</button>
+<button onclick="removeEtf('${value}')"><img src="images/close.svg" width="15px" style="margin-top:5px;"></button>
 `;
         selectedEtfsContainer.appendChild(tag);
     }
