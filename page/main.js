@@ -1,3 +1,5 @@
+const windowSize = 200;
+
 async function updateImage() {
     const select  = document.getElementById("etf-select");
     const chart   = document.getElementById("etf-chart");
@@ -12,7 +14,6 @@ async function updateImage() {
 
     const trace = { x: xValues, y: yValues, type: "scatter", mode: "lines", name: "XY dict"};
 
-    /* first valid observation */
     let minX = xValues.findIndex(x => jsondata[x] != null);
     if (minX < 0) minX = 0;
 
@@ -40,11 +41,11 @@ async function updateImage() {
 
     document.getElementById("plot-closing-prices").style.margin = "auto";
 }
-// --------------------- mobile menu ---------------------
+
 function toggleMenu() {
     document.getElementById("mobileMenu").classList.toggle("open");
 }
-// --------------------- ETF picker ----------------------
+
 const dropdown              = document.getElementById("etf-dropdown");
 const selectedEtfsContainer = document.getElementById("selected-etfs");
 let   etfOrder              = [];
@@ -66,7 +67,6 @@ dropdown.addEventListener("change", () => {
 });
 function removeEtf(id){ const tag = document.getElementById(id); if(tag) tag.remove(); }
 
-// --------------------- load ETF list -------------------
 fetch("http://127.0.0.1:8000/get_etfs")
     .then(r => r.json())
     .then(data => {
@@ -81,21 +81,16 @@ fetch("http://127.0.0.1:8000/get_etfs")
     })
     .catch(err => { console.error(err); alert("get_etfs error."); });
 
-// --------------------- train button --------------------
 document.getElementById("train-model-btn").addEventListener("click", async () => {
-    /*  gather tickers picked with the tags (keeps UI order) */
     const tags = Array.from(selectedEtfsContainer.children).map(el => el.id);
     if (tags.length < 1) { alert("Selectează cel puțin două ETF-uri înainte de antrenare."); return; }
     const sortedTags = etfOrder.filter(etf => tags.includes(etf));
-
-    /* run optimisation on back end */
     const data = await fetch("http://127.0.0.1:8000/process", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(sortedTags)
     }).then(r => r.json()).catch(e => { console.error(e); alert("Eroare la antrenare."); });
 
-    /* show allocation table ------------------------------------------------ */
     const ul = document.getElementById("results-ul");
     ul.innerHTML = "";
     data.allocations.forEach((value, idx) => {
@@ -108,11 +103,12 @@ document.getElementById("train-model-btn").addEventListener("click", async () =>
         <b>Rată de recuperare a investiției (ROI, return on investment):</b> ${(data.roi * 100).toFixed(2)}%<br>
         <b>Raport Sharpe:</b> ${data.sharpe.toFixed(2)}`;
 
-    /* sliders -------------------------------------------------------------- */
     const sliders = document.getElementById("weight-sliders");
     sliders.innerHTML = "<h3>Ponderile ETF-urilor:</h3>";
+    var officialScalars = [];
     sortedTags.forEach((tag, idx) => {
         const pct = Math.floor(data.allocations[idx] * 100);
+        officialScalars.push(data.allocations[idx]);
         const label = document.createElement("label");
         label.innerHTML = `
             ${tag}: <input type="range" id="${tag}-slider" min="0" max="100" step="1" value="${pct}">
@@ -120,7 +116,6 @@ document.getElementById("train-model-btn").addEventListener("click", async () =>
         sliders.appendChild(label);
     });
 
-    /* --------------------- load each ETF price history ------------------- */
     const histories = await Promise.all( sortedTags.map(tag =>
         fetch(`http://127.0.0.1:8000/get_etf_history?etf=${tag}`)
             .then(r => r.json())
@@ -132,25 +127,21 @@ document.getElementById("train-model-btn").addEventListener("click", async () =>
             }))
     ));
 
-    /* common X axis (trim leading nulls on each series) */
-    const xValues  = histories[0].x;     // backend returns aligned series
+    const xValues  = histories[0].x;
     const yValList = histories.map(h => h.y);
     
     console.log(yValList);
 
-    var minX = 0;
-    yValList.forEach(arr => {
-        let mintemp = arr.findIndex(x => x != null);
-        if (mintemp < 0) minX = 0;
+    // var minX = 0;
+    // yValList.forEach(arr => {
+    //     let mintemp = arr.findIndex(x => x != null);
+    //     if (mintemp < 0) minX = 0;
 
-        if (mintemp > minX) minX = mintemp;
-    });
+    //     if (mintemp > minX) minX = mintemp;
+    // });
     var maxY = Math.max(...yValList.flat().filter(v => v != null));
-    // var minY = Math.min(...yValList.flat().filter(v => v != null));
-    // console.log(minY);
     console.log(maxY);
 
-    /* plotting helper ------------------------------------------------------ */
     const isMobile = window.innerWidth < 600;
     const layout = {
         autosize   : true,
@@ -158,7 +149,7 @@ document.getElementById("train-model-btn").addEventListener("click", async () =>
         uirevision : "keep-axes",
         xaxis: {
             title      : "Timp",
-            range      : [minX, yValList[0].length],
+            range      : [yValList[0].length - windowSize + 1, yValList[0].length],
             linewidth  : 1,
             automargin : true,
             titlefont  : { size: isMobile ? 12 : 16 },
@@ -195,11 +186,8 @@ document.getElementById("train-model-btn").addEventListener("click", async () =>
             name: "XY dict"
         }], layout, { responsive: true });
         document.getElementById("plot-options").style.margin = "auto";
-        // document.getElementById("plot-options").style.height = "500px";
     }
-    // Plotly.newPlot("plot-options", [], layout, { responsive: true });
     updatePlot();
-    /* bind live listeners */
     sortedTags.forEach(tag =>
         document.getElementById(`${tag}-slider`).addEventListener("input", updatePlot)
     );
