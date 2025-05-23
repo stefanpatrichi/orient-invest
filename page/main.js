@@ -123,8 +123,8 @@ document.getElementById("train-model-btn") .addEventListener("click", () => {
     const tags = Array.from(selectedEtfsContainer.children).map(
         (el) => el.id
     );
-    if (tags.length === 0) {
-        alert("Selectează cel puțin un ETF înainte de antrenare.");
+    if (tags.length <= 1) {
+        alert("Selectează cel puțin două ETF-uri înainte de antrenare.");
         return;
     }
 
@@ -134,25 +134,53 @@ document.getElementById("train-model-btn") .addEventListener("click", () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(sortedTags),
-    })
-        .then((res) => res.json())
-        .then((data) => {
-            const resultDiv = document.getElementById("result-list");
-            const ul = document.getElementById("results-ul");
-            ul.innerHTML = "";
+    }).then((res) => res.json()).then((data) => {
+        const resultDiv = document.getElementById("result-list");
+        const ul = document.getElementById("results-ul");
+        ul.innerHTML = "";
 
-            data.forEach((value, idx) => {
-                const li = document.createElement("li");
-                li.textContent = `${sortedTags[idx]}: ${(value * 100).toFixed(
-                    2
-                )}%`;
-                ul.appendChild(li);
-            });
-
-            resultDiv.style.display = "block";
-        })
-        .catch((err) => {
-            console.error(err);
-            alert("Eroare la antrenare.");
+        data["allocations"].forEach((value, idx) => {
+            const li = document.createElement("li");
+            li.textContent = `${sortedTags[idx]}: ${(value * 100).toFixed(
+                2
+            )}%`;
+            ul.appendChild(li);
         });
+
+        resultDiv.style.display = "block";
+
+        document.getElementById("roi-sharpe").innerHTML = 
+            `<b>Rată de recuperare a investiției (ROI, return on investment):</b> ${(data["roi"] * 100).toFixed(2)}%<br>
+             <b>Raport Sharpe:</b> ${data["sharpe"].toFixed(2)}`;
+
+        const sliders = document.getElementById("weight-sliders");
+        sliders.innerHTML = "";
+
+        const h3 = document.createElement("h3");
+        h3.innerText = "Ponderile ETF-urilor:";
+        sliders.appendChild(h3);
+
+        sortedTags.forEach((tag, idx) => {
+            const label = document.createElement("label");
+            label.innerHTML = `${tag}: <input type="range" id="${tag}-slider" min="0" max="100" step="1" 
+                value="${Number(Math.floor(data["allocations"][idx] * 100))}"></label> 
+                <span id="${tag}-val">${Number(Math.floor(data["allocations"][idx] * 100))}</span>`;
+
+            sliders.appendChild(label);
+        })
+
+        function updatePlot() {
+            sortedTags.forEach((tag) => {
+                const x = parseInt(document.getElementById(`${tag}-slider`).value);
+                document.getElementById(`${tag}-val`).textContent = x;
+            });
+        }
+
+        sortedTags.forEach(tag => {
+            document.getElementById(`${tag}-slider`).addEventListener("input", updatePlot);
+        })
+    }).catch((err) => {
+        console.error(err);
+        alert("Eroare la antrenare.");
+    });
 });

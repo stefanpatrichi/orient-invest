@@ -30,7 +30,7 @@
 			</nav>
 			<nav class="mobile-menu" id="mobileMenu">
 				<a href="index.html">Acasă</a>
-				<a href="how.html">Cum funcționează</a>
+				<a href="how.html">Cum funcționează?</a>
 				<div class="mobile-menu-footer">© 2025 Orient Invest</div>
 			</nav>
 		</header>
@@ -47,32 +47,17 @@
 					<label for="etf-select">Vizualizează graficul prețurilor de închidere pentru ETF-ul ales:</label>
 					<select id="etf-select" onchange="updateImage()">
 						<option value="loading">Loading...</option>
-						<!-- <option value="etf2">ETF Energie - Placeholder</option>
-						<option value="etf3">ETF Sustenabilitate - Placeholder</option> -->
 					</select>
 				</div>
 
-				<!-- <div id="etf-chart-container">
-					<img id="etf-chart" src="" style="display:none;"/>
-				</div> -->
-
                 <div id="plot-closing-prices"></div> 
 
-                <!-- <div class="weight-sliders"></div>
-                <h3>Adjust Weights:</h3> 
-                <label>a: <input type="range" id="aSlider" min="0" max="100" step="1" value="0"></label> <span id="aVal">0</span><br> 
-                <label>b: <input type="range" id="bSlider" min="0" max="100" step="1" value="0"></label> <span id="bVal">0</span><br> 
-                <label>c: <input type="range" id="cSlider" min="0" max="100" step="1" value="0"></label> <span id="cVal">0</span><br> -->
 			</section>
 
 			<section class="etf-list-container">
 				<h2>Selectează ETF-uri pentru portofoliu:</h2>
 				<select id="etf-dropdown">
 					<option value="loading">Loading...</option>
-					<!-- <option value="ROX.DE">ROX.DE</option>
-					<option value="EPOL">EPOL</option>
-					<option value="IPOLL.XC">IPOLL.XC</option>
-					<option value="PLX.DE">PLX.DE</option> -->
 				</select>
 				<div class="selected-etfs" id="selected-etfs"></div>
 				<button id="train-model-btn">Antrenează modelul</button>
@@ -80,7 +65,16 @@
 					<h3>Rezultate:</h3>
 					<ul id="results-ul"></ul>
 				</div>
+                <div id="roi-sharpe" style="margin-top:5px;"></div>
 			</section>
+
+            <section>
+                <div id="plot-options"></div> 
+
+                <div id="weight-sliders" style="margin-top: 10px">
+                </div>
+
+            </section>
 		</main>
 
 		<footer>

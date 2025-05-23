@@ -21,7 +21,7 @@ class Model:
 
     def __build_model(self, input_shape, outputs):
         model = Sequential([
-            LSTM(64, input_shape=input_shape, dropout=0.2, recurrent_dropout=0.2),
+            LSTM(32, input_shape=input_shape, dropout=0.2, recurrent_dropout=0.2),
             Flatten(),
             Dense(outputs, activation='softmax')
         ])

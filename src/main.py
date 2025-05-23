@@ -41,7 +41,7 @@ def process_request(etfs):
     print(type(allocations))
     print(type(allocations[0]))
 
-    return allocations
+    return {"allocations": allocations, "roi": roi.numpy().astype(float), "sharpe": sharpe.numpy().astype(float)}
 
 def get_etfs():
     df = pd.read_json(DATA_PATH)
