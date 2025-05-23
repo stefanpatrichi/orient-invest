@@ -19,22 +19,16 @@ function updateImage() {
             name: 'XY dict',
         };
 
-        console.log(jsondata)
-        console.log(xValues)
-        console.log(yValues)
-
         var minX = 0;
         for (var i in xValues) {
             minX = i;
             if (jsondata[i] != null) break;
         }
 
-        console.log(minX)
-
         const isMobile = window.innerWidth < 600;
         Plotly.newPlot('plot-closing-prices', [trace], {
             autosize: true,
-            title: 'Prețuri de închidere ' + selected,
+            title: 'Prețuri',
             xaxis: { 
                 title: 'Timp', 
                 range: [minX, xValues.length], 
@@ -92,8 +86,6 @@ fetch("http://127.0.0.1:8000/get_etfs", {
     method: "GET",
     headers: { "Content-Type": "application/json" },
 }).then((res) => res.json()).then((data) => {
-    console.log("API răspuns:", data);
-
     etfOrder = data;
 
     const select1 = document.getElementById("etf-select");
@@ -123,7 +115,7 @@ document.getElementById("train-model-btn") .addEventListener("click", () => {
     const tags = Array.from(selectedEtfsContainer.children).map(
         (el) => el.id
     );
-    if (tags.length <= 1) {
+    if (tags.length <= 0) {
         alert("Selectează cel puțin două ETF-uri înainte de antrenare.");
         return;
     }
@@ -169,16 +161,93 @@ document.getElementById("train-model-btn") .addEventListener("click", () => {
             sliders.appendChild(label);
         })
 
+        function mymax(a, b) {
+            return (a > b) ? a : b;
+        }
+
+        var xValues, yValList = [], minX = 0, maxY = 0;
+        sortedTags.forEach(tag => {
+            fetch("http://127.0.0.1:8000/get_etf_history?etf=" + tag, {
+                method: "GET",
+                headers: { "Content-Type": "application/json" },
+            }).then((res) => res.json()).then((data) => {
+                jsondata = JSON.parse(data);
+                xValues = Object.keys(jsondata).map(Number);
+                var _yValues = Object.values(jsondata);
+                yValList.push(_yValues);
+                for (var i in xValues) {
+                    minX = mymax(Number(minX), Number(i));
+                    if (jsondata[i] != null) break;
+                }
+                console.log(minX);
+
+                yValList.forEach(subArr => {
+                    subArr.splice(0, minX);
+                })
+                for (var arr in yValList) {
+                    for (var y in arr) {
+                        console.log(y);
+                        maxY = mymax(Number(maxY), Number(y));
+                    }
+                }
+                console.log(maxY);
+            });
+        });
+
+
         function updatePlot() {
+            var scalars = [];
             sortedTags.forEach((tag) => {
                 const x = parseInt(document.getElementById(`${tag}-slider`).value);
                 document.getElementById(`${tag}-val`).textContent = x;
+                scalars.push(x);
             });
+
+            if (yValList.length != scalars.length) alert("length error");
+            const yValues = Array.from({ length: yValList[0].length }, (_, i) => {
+                return yValList.reduce((sum, arr, j) => sum + scalars[j] / 100.0 * arr[i], 0)
+            });
+
+            console.log(scalars);
+            console.log(yValues);
+
+            const trace = {
+                x: xValues,
+                y: yValues,
+                type: 'scatter',
+                mode: 'lines',
+                name: 'XY dict',
+            };
+
+            const isMobile = window.innerWidth < 600;
+            Plotly.newPlot('plot-options', [trace], {
+                autosize: true,
+                title: 'Prețuri',
+                xaxis: { 
+                    title: 'Timp', 
+                    range: [minX, xValues.length], 
+                    linewidth: 1, 
+                    automargin: true, 
+                    titlefont: { size: isMobile ? 12 : 16 },
+                    tickfont: { size: isMobile ? 10 : 14 } 
+                },
+                yaxis: { 
+                    title: 'Preț', 
+                    range: [0, maxY],
+                    linewidth: 1, 
+                    automargin: true, 
+                    titlefont: { size: isMobile ? 12 : 16 },
+                    tickfont: { size: isMobile ? 10 : 14 }
+                },
+                font: { size: isMobile ? 12 : 16 },
+            }, { responsive: true });
+
+            document.getElementById("plot-closing-prices").style["margin"] = "auto";
         }
 
         sortedTags.forEach(tag => {
             document.getElementById(`${tag}-slider`).addEventListener("input", updatePlot);
-        })
+        });
     }).catch((err) => {
         console.error(err);
         alert("Eroare la antrenare.");
