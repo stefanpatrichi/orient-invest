@@ -9,6 +9,7 @@
 			rel="stylesheet"
 		/>
 		<link rel="stylesheet" href="style.css"/>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 </head>
 	<body>
 		<header>
@@ -55,10 +56,17 @@
 					</select>
 				</div>
 
-				<div id="etf-chart-container">
-					<!-- Selectează un ETF -->
+				<!-- <div id="etf-chart-container">
 					<img id="etf-chart" src="" style="display:none;"/>
-				</div>
+				</div> -->
+
+                <div id="plot-closing-prices"></div> 
+
+                <!-- <div class="weight-sliders"></div>
+                <h3>Adjust Weights:</h3> 
+                <label>a: <input type="range" id="aSlider" min="0" max="100" step="1" value="0"></label> <span id="aVal">0</span><br> 
+                <label>b: <input type="range" id="bSlider" min="0" max="100" step="1" value="0"></label> <span id="bVal">0</span><br> 
+                <label>c: <input type="range" id="cSlider" min="0" max="100" step="1" value="0"></label> <span id="cVal">0</span><br> -->
 			</section>
 
 			<section class="etf-list-container">
@@ -84,5 +92,6 @@
 		</footer>
 
 		<script src="main.js"></script>
+		<script src="plot.js"></script>
 	</body>
 </html>

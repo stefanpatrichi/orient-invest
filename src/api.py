@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Body
+from fastapi import FastAPI, Body, Query
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Any, Callable
 import uvicorn
@@ -8,14 +8,16 @@ class APIServer:
     :param process_fn: Callable[[List[Any]], List[Any]] - Function to process incoming lists.
     :param allowed_origins: List[str] - CORS origins to allow.
     """
-    def __init__(self, process_fn: Callable[[List[Any]], List[Any]], get_etfs_fn: Callable, allowed_origins: List[str] = None):
+    def __init__(self, process_fn: Callable[[List[Any]], List[Any]], get_etfs_fn: Callable, get_etf_history_fn: Callable[[str], str], allowed_origins: List[str] = None):
         if not callable(process_fn):
             raise ValueError("process_fn must be a callable that accepts and returns a List[Any]")
         self.process_fn = process_fn
         self.get_etfs_fn = get_etfs_fn
+        self.get_etf_history_fn = get_etf_history_fn
         self.app = FastAPI()
         # Configure CORS
         origins = allowed_origins or ["*"]
+        print(origins)
         self.app.add_middleware(
             CORSMiddleware,
             allow_origins=origins,
@@ -43,6 +45,15 @@ class APIServer:
             if not isinstance(result, list):
                 raise ValueError("get_etfs_fn must return a list")
             return result
+        
+        @self.app.get("/get_etf_history", response_model=str)
+        async def get_etf_history(etf: str = Query()):
+            print("get_etf_history")
+            result = self.get_etf_history_fn(etf)
+            if not isinstance(result, str):
+                raise ValueError("get_etf_history_fn must return a JSON string")
+            return result
+
     
     # def _register_routes(self):
     #     @self.app.get("/get_etfs", response_model=List[Any])

@@ -3,8 +3,50 @@ function updateImage() {
     const chart = document.getElementById("etf-chart");
     const selected = select.value;
 
-    chart.src = "images/" + selected + ".png";
-    chart.style["display"] = "block";
+    fetch("http://127.0.0.1:8000/get_etf_history?etf=" + selected, {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+    }).then((res) => res.json()).then((data) => {
+        jsondata = JSON.parse(data)
+        const xValues = Object.keys(jsondata).map(Number);
+        const yValues = Object.values(jsondata);
+
+        const trace = {
+            x: xValues,
+            y: yValues,
+            type: 'scatter',
+            mode: 'lines',
+            name: 'XY dict',
+            // line: {width: 1}
+        };
+
+        console.log(jsondata)
+        console.log(xValues)
+        console.log(yValues)
+
+        var minX = 0;
+        for (var i in xValues) {
+            minX = i;
+            if (jsondata[i] != null) break;
+        }
+
+        console.log(minX)
+
+        const isMobile = window.innerWidth < 600;
+        Plotly.newPlot('plot-closing-prices', [trace], {
+            autosize: true,
+            title: 'Prețuri de închidere ' + selected,
+            xaxis: { title: 'Timp', range: [minX, xValues.length], linewidth: 1, automargin: true, titlefont: { size: isMobile ? 12 : 16 },
+    tickfont: { size: isMobile ? 10 : 14 } },
+            yaxis: { title: 'Preț', linewidth: 1, automargin: true, titlefont: { size: isMobile ? 12 : 16 },
+    tickfont: { size: isMobile ? 10 : 14 } },
+            font: { size: isMobile ? 12 : 16 },
+        }, { responsive: true });
+
+        document.getElementById("plot-closing-prices").style["margin"] = "auto";
+    });
+    // chart.src = "images/" + selected + ".png";
+    // chart.style["display"] = "block";
 }
 
 function toggleMenu() {
