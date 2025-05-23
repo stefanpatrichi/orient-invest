@@ -17,7 +17,6 @@ class APIServer:
         self.app = FastAPI()
         # Configure CORS
         origins = allowed_origins or ["*"]
-        print(origins)
         self.app.add_middleware(
             CORSMiddleware,
             allow_origins=origins,
