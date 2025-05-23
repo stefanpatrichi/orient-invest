@@ -1,255 +1,206 @@
-function updateImage() {
-    const select = document.getElementById("etf-select");
-    const chart = document.getElementById("etf-chart");
+async function updateImage() {
+    const select  = document.getElementById("etf-select");
+    const chart   = document.getElementById("etf-chart");
     const selected = select.value;
 
-    fetch("http://127.0.0.1:8000/get_etf_history?etf=" + selected, {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-    }).then((res) => res.json()).then((data) => {
-        jsondata = JSON.parse(data)
-        const xValues = Object.keys(jsondata).map(Number);
-        const yValues = Object.values(jsondata);
+    const jsondata = await fetch(
+        `http://127.0.0.1:8000/get_etf_history?etf=${selected}`
+    ).then(r => r.json()).then(data => JSON.parse(data));
 
-        const trace = {
-            x: xValues,
-            y: yValues,
-            type: 'scatter',
-            mode: 'lines',
-            name: 'XY dict',
-        };
+    const xValues = Object.keys(jsondata).map(Number);
+    const yValues = Object.values(jsondata);
 
-        var minX = 0;
-        for (var i in xValues) {
-            minX = i;
-            if (jsondata[i] != null) break;
-        }
+    const trace = { x: xValues, y: yValues, type: "scatter", mode: "lines", name: "XY dict"};
 
-        const isMobile = window.innerWidth < 600;
-        Plotly.newPlot('plot-closing-prices', [trace], {
-            autosize: true,
-            title: 'Prețuri',
-            xaxis: { 
-                title: 'Timp', 
-                range: [minX, xValues.length], 
-                linewidth: 1, 
-                automargin: true, 
-                titlefont: { size: isMobile ? 12 : 16 },
-                tickfont: { size: isMobile ? 10 : 14 } 
-            },
-            yaxis: { 
-                title: 'Preț', 
-                linewidth: 1, 
-                automargin: true, 
-                titlefont: { size: isMobile ? 12 : 16 },
-                tickfont: { size: isMobile ? 10 : 14 }
-            },
-            font: { size: isMobile ? 12 : 16 },
-        }, { responsive: true });
+    /* first valid observation */
+    let minX = xValues.findIndex(x => jsondata[x] != null);
+    if (minX < 0) minX = 0;
 
-        document.getElementById("plot-closing-prices").style["margin"] = "auto";
-    });
+    const isMobile = window.innerWidth < 600;
+    Plotly.newPlot("plot-closing-prices", [trace], {
+        autosize: true,
+        title: "Prețuri",
+        xaxis: {
+            title: "Timp",
+            range: [minX, xValues.length],
+            linewidth: 1,
+            automargin: true,
+            titlefont: { size: isMobile ? 12 : 16 },
+            tickfont:  { size: isMobile ? 10 : 14 }
+        },
+        yaxis: {
+            title: "Preț",
+            linewidth: 1,
+            automargin: true,
+            titlefont: { size: isMobile ? 12 : 16 },
+            tickfont:  { size: isMobile ? 10 : 14 }
+        },
+        font: { size: isMobile ? 12 : 16 }
+    }, { responsive: true });
+
+    document.getElementById("plot-closing-prices").style.margin = "auto";
 }
-
+// --------------------- mobile menu ---------------------
 function toggleMenu() {
-    const menu = document.getElementById("mobileMenu");
-    menu.classList.toggle("open");
+    document.getElementById("mobileMenu").classList.toggle("open");
 }
-
-const dropdown = document.getElementById("etf-dropdown");
+// --------------------- ETF picker ----------------------
+const dropdown              = document.getElementById("etf-dropdown");
 const selectedEtfsContainer = document.getElementById("selected-etfs");
-let etfOrder = [];
+let   etfOrder              = [];
 
 dropdown.addEventListener("change", () => {
-const value = dropdown.value;
-const label = dropdown.options[dropdown.selectedIndex].text;
-
-if (!document.getElementById(value)) {
-    const tag = document.createElement("div");
-    tag.className = "etf-tag";
-    tag.id = value;
-    tag.innerHTML = `
-        ${label}
-        <button onclick="removeEtf('${value}')"><img src="images/close.svg" width="15px" style="margin-top:5px;"></button>
-    `;
-    selectedEtfsContainer.appendChild(tag);
-}
-});
-
-function removeEtf(id) {
-    const tag = document.getElementById(id);
-    if (tag) tag.remove();
-}
-
-// Ia ETF-urile din lista
-fetch("http://127.0.0.1:8000/get_etfs", {
-    method: "GET",
-    headers: { "Content-Type": "application/json" },
-}).then((res) => res.json()).then((data) => {
-    etfOrder = data;
-
-    const select1 = document.getElementById("etf-select");
-    const select2 = document.getElementById("etf-dropdown");
-
-    select1.innerHTML = "";
-    select2.innerHTML = "";
-
-    data.forEach((etf) => {
-        const option1 = document.createElement("option");
-        option1.value = etf;
-        option1.textContent = etf;
-        select1.appendChild(option1);
-
-        const option2 = document.createElement("option");
-        option2.value = etf;
-        option2.textContent = etf;
-        select2.appendChild(option2);
-    });
-}).catch((err) => {
-    console.error(err);
-    alert("get_etfs error.");
-});
-
-//Script-ul pentru butonul de train
-document.getElementById("train-model-btn") .addEventListener("click", () => {
-    const tags = Array.from(selectedEtfsContainer.children).map(
-        (el) => el.id
-    );
-    if (tags.length <= 0) {
-        alert("Selectează cel puțin două ETF-uri înainte de antrenare.");
-        return;
+    const value = dropdown.value;
+    const label = dropdown.options[dropdown.selectedIndex].text;
+    if (!document.getElementById(value)) {
+        const tag = document.createElement("div");
+        tag.className = "etf-tag";
+        tag.id        = value;
+        tag.innerHTML = `
+            ${label}
+            <button onclick="removeEtf('${value}')">
+                <img src="images/close.svg" width="15" style="margin-top:5px">
+            </button>`;
+        selectedEtfsContainer.appendChild(tag);
     }
+});
+function removeEtf(id){ const tag = document.getElementById(id); if(tag) tag.remove(); }
 
-    const sortedTags = etfOrder.filter((etf) => tags.includes(etf));
+// --------------------- load ETF list -------------------
+fetch("http://127.0.0.1:8000/get_etfs")
+    .then(r => r.json())
+    .then(data => {
+        etfOrder = data;
+        const select1 = document.getElementById("etf-select");
+        const select2 = document.getElementById("etf-dropdown");
+        select1.innerHTML = select2.innerHTML = "";
+        data.forEach(etf => {
+            select1.appendChild(new Option(etf, etf));
+            select2.appendChild(new Option(etf, etf));
+        });
+    })
+    .catch(err => { console.error(err); alert("get_etfs error."); });
 
-    fetch("http://127.0.0.1:8000/process", {
+// --------------------- train button --------------------
+document.getElementById("train-model-btn").addEventListener("click", async () => {
+    /*  gather tickers picked with the tags (keeps UI order) */
+    const tags = Array.from(selectedEtfsContainer.children).map(el => el.id);
+    if (tags.length < 1) { alert("Selectează cel puțin două ETF-uri înainte de antrenare."); return; }
+    const sortedTags = etfOrder.filter(etf => tags.includes(etf));
+
+    /* run optimisation on back end */
+    const data = await fetch("http://127.0.0.1:8000/process", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(sortedTags),
-    }).then((res) => res.json()).then((data) => {
-        const resultDiv = document.getElementById("result-list");
-        const ul = document.getElementById("results-ul");
-        ul.innerHTML = "";
+        body: JSON.stringify(sortedTags)
+    }).then(r => r.json()).catch(e => { console.error(e); alert("Eroare la antrenare."); });
 
-        data["allocations"].forEach((value, idx) => {
-            const li = document.createElement("li");
-            li.textContent = `${sortedTags[idx]}: ${(value * 100).toFixed(
-                2
-            )}%`;
-            ul.appendChild(li);
-        });
-
-        resultDiv.style.display = "block";
-
-        document.getElementById("roi-sharpe").innerHTML = 
-            `<b>Rată de recuperare a investiției (ROI, return on investment):</b> ${(data["roi"] * 100).toFixed(2)}%<br>
-             <b>Raport Sharpe:</b> ${data["sharpe"].toFixed(2)}`;
-
-        const sliders = document.getElementById("weight-sliders");
-        sliders.innerHTML = "";
-
-        const h3 = document.createElement("h3");
-        h3.innerText = "Ponderile ETF-urilor:";
-        sliders.appendChild(h3);
-
-        sortedTags.forEach((tag, idx) => {
-            const label = document.createElement("label");
-            label.innerHTML = `${tag}: <input type="range" id="${tag}-slider" min="0" max="100" step="1" 
-                value="${Number(Math.floor(data["allocations"][idx] * 100))}"></label> 
-                <span id="${tag}-val">${Number(Math.floor(data["allocations"][idx] * 100))}</span>`;
-
-            sliders.appendChild(label);
-        })
-
-        function mymax(a, b) {
-            return (a > b) ? a : b;
-        }
-
-        var xValues, yValList = [], minX = 0, maxY = 0;
-        sortedTags.forEach(tag => {
-            fetch("http://127.0.0.1:8000/get_etf_history?etf=" + tag, {
-                method: "GET",
-                headers: { "Content-Type": "application/json" },
-            }).then((res) => res.json()).then((data) => {
-                jsondata = JSON.parse(data);
-                xValues = Object.keys(jsondata).map(Number);
-                var _yValues = Object.values(jsondata);
-                yValList.push(_yValues);
-                for (var i in xValues) {
-                    minX = mymax(Number(minX), Number(i));
-                    if (jsondata[i] != null) break;
-                }
-                console.log(minX);
-
-                yValList.forEach(subArr => {
-                    subArr.splice(0, minX);
-                })
-                for (var arr in yValList) {
-                    for (var y in arr) {
-                        console.log(y);
-                        maxY = mymax(Number(maxY), Number(y));
-                    }
-                }
-                console.log(maxY);
-            });
-        });
-
-
-        function updatePlot() {
-            var scalars = [];
-            sortedTags.forEach((tag) => {
-                const x = parseInt(document.getElementById(`${tag}-slider`).value);
-                document.getElementById(`${tag}-val`).textContent = x;
-                scalars.push(x);
-            });
-
-            if (yValList.length != scalars.length) alert("length error");
-            const yValues = Array.from({ length: yValList[0].length }, (_, i) => {
-                return yValList.reduce((sum, arr, j) => sum + scalars[j] / 100.0 * arr[i], 0)
-            });
-
-            console.log(scalars);
-            console.log(yValues);
-
-            const trace = {
-                x: xValues,
-                y: yValues,
-                type: 'scatter',
-                mode: 'lines',
-                name: 'XY dict',
-            };
-
-            const isMobile = window.innerWidth < 600;
-            Plotly.newPlot('plot-options', [trace], {
-                autosize: true,
-                title: 'Prețuri',
-                xaxis: { 
-                    title: 'Timp', 
-                    range: [minX, xValues.length], 
-                    linewidth: 1, 
-                    automargin: true, 
-                    titlefont: { size: isMobile ? 12 : 16 },
-                    tickfont: { size: isMobile ? 10 : 14 } 
-                },
-                yaxis: { 
-                    title: 'Preț', 
-                    range: [0, maxY],
-                    linewidth: 1, 
-                    automargin: true, 
-                    titlefont: { size: isMobile ? 12 : 16 },
-                    tickfont: { size: isMobile ? 10 : 14 }
-                },
-                font: { size: isMobile ? 12 : 16 },
-            }, { responsive: true });
-
-            document.getElementById("plot-closing-prices").style["margin"] = "auto";
-        }
-
-        sortedTags.forEach(tag => {
-            document.getElementById(`${tag}-slider`).addEventListener("input", updatePlot);
-        });
-    }).catch((err) => {
-        console.error(err);
-        alert("Eroare la antrenare.");
+    /* show allocation table ------------------------------------------------ */
+    const ul = document.getElementById("results-ul");
+    ul.innerHTML = "";
+    data.allocations.forEach((value, idx) => {
+        const li = document.createElement("li");
+        li.textContent = `${sortedTags[idx]}: ${(value * 100).toFixed(2)}%`;
+        ul.appendChild(li);
     });
+    document.getElementById("result-list").style.display = "block";
+    document.getElementById("roi-sharpe").innerHTML = `
+        <b>Rată de recuperare a investiției (ROI, return on investment):</b> ${(data.roi * 100).toFixed(2)}%<br>
+        <b>Raport Sharpe:</b> ${data.sharpe.toFixed(2)}`;
+
+    /* sliders -------------------------------------------------------------- */
+    const sliders = document.getElementById("weight-sliders");
+    sliders.innerHTML = "<h3>Ponderile ETF-urilor:</h3>";
+    sortedTags.forEach((tag, idx) => {
+        const pct = Math.floor(data.allocations[idx] * 100);
+        const label = document.createElement("label");
+        label.innerHTML = `
+            ${tag}: <input type="range" id="${tag}-slider" min="0" max="100" step="1" value="${pct}">
+            <span id="${tag}-val">${pct}</span>`;
+        sliders.appendChild(label);
+    });
+
+    /* --------------------- load each ETF price history ------------------- */
+    const histories = await Promise.all( sortedTags.map(tag =>
+        fetch(`http://127.0.0.1:8000/get_etf_history?etf=${tag}`)
+            .then(r => r.json())
+            .then(data => JSON.parse(data))
+            .then(obj => ({
+                tag,
+                x:  Object.keys(obj).map(Number),
+                y:  Object.values(obj)
+            }))
+    ));
+
+    /* common X axis (trim leading nulls on each series) */
+    const xValues  = histories[0].x;     // backend returns aligned series
+    const yValList = histories.map(h => h.y);
+    
+    console.log(yValList);
+
+    var minX = 0;
+    yValList.forEach(arr => {
+        let mintemp = arr.findIndex(x => x != null);
+        if (mintemp < 0) minX = 0;
+
+        if (mintemp > minX) minX = mintemp;
+    });
+    var maxY = Math.max(...yValList.flat().filter(v => v != null));
+    // var minY = Math.min(...yValList.flat().filter(v => v != null));
+    // console.log(minY);
+    console.log(maxY);
+
+    /* plotting helper ------------------------------------------------------ */
+    const isMobile = window.innerWidth < 600;
+    const layout = {
+        autosize   : true,
+        title      : "Prețuri",
+        uirevision : "keep-axes",
+        xaxis: {
+            title      : "Timp",
+            range      : [minX, yValList[0].length],
+            linewidth  : 1,
+            automargin : true,
+            titlefont  : { size: isMobile ? 12 : 16 },
+            tickfont   : { size: isMobile ? 10 : 14 }
+        },
+        yaxis: {
+            title      : "Preț",
+            range      : [0, maxY],
+            linewidth  : 1,
+            automargin : true,
+            titlefont  : { size: isMobile ? 12 : 16 },
+            tickfont   : { size: isMobile ? 10 : 14 }
+        },
+        font: { size: isMobile ? 12 : 16 }
+    };
+
+    function updatePlot(){
+        const scalars = sortedTags.map(tag => {
+            const x = parseInt(document.getElementById(`${tag}-slider`).value, 10);
+            document.getElementById(`${tag}-val`).textContent = x;
+            return x / 100;
+        });
+        /* combine scalar * price for each day */
+        const yValues = xValues.map((_, i) =>
+            yValList.reduce((sum, arr, j) => sum + scalars[j] * arr[i], 0)
+        );
+        document.getElementById("plot-options").style.height = "500px";
+        console.log(layout);
+        Plotly.react("plot-options", [{
+            x: xValues,
+            y: yValues,
+            type: "scatter",
+            mode: "lines",
+            name: "XY dict"
+        }], layout, { responsive: true });
+        document.getElementById("plot-options").style.margin = "auto";
+        // document.getElementById("plot-options").style.height = "500px";
+    }
+    // Plotly.newPlot("plot-options", [], layout, { responsive: true });
+    updatePlot();
+    /* bind live listeners */
+    sortedTags.forEach(tag =>
+        document.getElementById(`${tag}-slider`).addEventListener("input", updatePlot)
+    );
 });
