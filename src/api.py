@@ -30,19 +30,30 @@ class APIServer:
     def _register_routes(self):
         @self.app.post("/process", response_model=List[Any])
         async def process(payload: List[Any] = Body(..., example=[1, 2, 3])):
+            print("process")
             """Endpoint to process a list of values using the provided function."""
             result = self.process_fn(payload)
             if not isinstance(result, list):
                 raise ValueError("process_fn must return a list")
             return result
-    
-    def _register_routes(self):
+        
+        # asta trebuie pus aici, ca altfel e singurul care poate fi accesat. (post-ul nu merge)
         @self.app.get("/get_etfs", response_model=List[Any])
         async def get_etfs():
+            print("get_etfs")
             result = self.get_etfs_fn()
             if not isinstance(result, list):
                 raise ValueError("get_etfs_fn must return a list")
             return result
+    
+    # def _register_routes(self):
+    #     @self.app.get("/get_etfs", response_model=List[Any])
+    #     async def get_etfs():
+    #         print("get_etfs")
+    #         result = self.get_etfs_fn()
+    #         if not isinstance(result, list):
+    #             raise ValueError("get_etfs_fn must return a list")
+    #         return result
 
     def run(self, host: str = "127.0.0.1", port: int = 8000):
         """

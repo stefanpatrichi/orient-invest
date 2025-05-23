@@ -273,6 +273,55 @@
 				font-weight: bold;
 			}
 
+			#train-model-btn {
+				margin-top: 30px;
+				padding: 12px 24px;
+				font-size: 1rem;
+				font-weight: 600;
+				color: var(--text-color);
+				background-color: var(--accent-color);
+				border: none;
+				border-radius: 8px;
+				cursor: pointer;
+				transition: background-color 0.3s;
+			}
+			#train-model-btn:hover {
+				background-color: #00e0ff;
+			}
+
+			.result-list {
+				margin-top: 30px;
+				padding: 20px;
+				background-color: #112031;
+				border-radius: 12px;
+				box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+				text-align: left;
+				max-width: 500px;
+				margin-left: auto;
+				margin-right: auto;
+			}
+
+			.result-list h3 {
+				color: var(--accent-color);
+				margin-bottom: 12px;
+				font-size: 1.3rem;
+				text-align: center;
+			}
+
+			.result-list ul {
+				list-style: none;
+				padding: 0;
+			}
+
+			.result-list li {
+				padding: 6px 0;
+				border-bottom: 1px solid #334155;
+			}
+
+			.result-list li:last-child {
+				border-bottom: none;
+			}
+
 			footer {
 				padding: 20px 0;
 				text-align: center;
@@ -330,25 +379,30 @@
 				<div class="dropdown-container">
 					<label for="etf-select">Selectează un ETF pentru grafic:</label>
 					<select id="etf-select" onchange="updateImage()">
-						<option value="etf1">ETF Tehnologie - Placeholder</option>
-						<option value="etf2">ETF Energie - Placeholder</option>
-						<option value="etf3">ETF Sustenabilitate - Placeholder</option>
+						<option value="loading">Loading...</option>
+						<!-- <option value="etf2">ETF Energie - Placeholder</option>
+						<option value="etf3">ETF Sustenabilitate - Placeholder</option> -->
 					</select>
 				</div>
 
-				<img id="etf-chart" src="chart1.png" alt="Graficul ETF-ului selectat" />
+				<img id="etf-chart" src="" alt="Selectează un ETF" />
 			</section>
 
 			<section class="etf-list-container">
 				<h2>Selectează ETF-uri pentru portofoliu:</h2>
 				<select id="etf-dropdown">
-					<option value="etf1">ETF Tehnologie - Placeholder</option>
-					<option value="etf2">ETF Energie - Placeholder</option>
-					<option value="etf3">ETF Sustenabilitate - Placeholder</option>
-					<option value="etf4">ETF Europa - Placeholder</option>
-					<option value="etf5">ETF S&P 500 - Placeholder</option>
+					<option value="loading">Loading...</option>
+					<!-- <option value="ROX.DE">ROX.DE</option>
+					<option value="EPOL">EPOL</option>
+					<option value="IPOLL.XC">IPOLL.XC</option>
+					<option value="PLX.DE">PLX.DE</option> -->
 				</select>
 				<div class="selected-etfs" id="selected-etfs"></div>
+				<button id="train-model-btn">Train Model</button>
+				<div class="result-list" id="result-list" style="display: none">
+					<h3>Rezultate:</h3>
+					<ul id="results-ul"></ul>
+				</div>
 			</section>
 		</main>
 
@@ -362,13 +416,17 @@
 				const chart = document.getElementById("etf-chart");
 				const selected = select.value;
 
-				const imageMap = {
-					etf1: "chart1.png",
-					etf2: "chart2.png",
-					etf3: "chart3.png",
-				};
+				// const imageMap = {
+				// 	etf1: "chart1.png",
+				// 	etf2: "chart2.png",
+				// 	etf3: "chart3.png",
+				// };
 
-				chart.src = imageMap[selected];
+				// chart.src = imageMap[selected] || "chart1.png";
+
+				chart.src = "images/" + selected + ".png";
+
+				console.log(chart.src);
 			}
 
 			function toggleMenu() {
@@ -378,6 +436,7 @@
 
 			const dropdown = document.getElementById("etf-dropdown");
 			const selectedEtfsContainer = document.getElementById("selected-etfs");
+			let etfOrder = [];
 
 			dropdown.addEventListener("change", () => {
 				const value = dropdown.value;
@@ -388,9 +447,9 @@
 					tag.className = "etf-tag";
 					tag.id = value;
 					tag.innerHTML = `
-            ${label}
-            <button onclick="removeEtf('${value}')">X</button>
-          `;
+			         ${label}
+			         <button onclick="removeEtf('${value}')">X</button>
+			       `;
 					selectedEtfsContainer.appendChild(tag);
 				}
 			});
@@ -399,6 +458,81 @@
 				const tag = document.getElementById(id);
 				if (tag) tag.remove();
 			}
+
+			// Ia ETF-urile din lista
+			fetch("http://127.0.0.1:8000/get_etfs", {
+				method: "GET",
+				headers: { "Content-Type": "application/json" },
+			})
+				.then((res) => res.json())
+				.then((data) => {
+					console.log("API răspuns:", data);
+
+					etfOrder = data;
+
+					const select1 = document.getElementById("etf-select");
+					const select2 = document.getElementById("etf-dropdown");
+
+					select1.innerHTML = "";
+					select2.innerHTML = "";
+
+					data.forEach((etf) => {
+						const option1 = document.createElement("option");
+						option1.value = etf;
+						option1.textContent = etf;
+						select1.appendChild(option1);
+
+						const option2 = document.createElement("option");
+						option2.value = etf;
+						option2.textContent = etf;
+						select2.appendChild(option2);
+					});
+				})
+				.catch((err) => {
+					console.error(err);
+					alert("get_etfs error.");
+				});
+
+			//Script-ul pentru butonul de train
+			document
+				.getElementById("train-model-btn")
+				.addEventListener("click", () => {
+					const tags = Array.from(selectedEtfsContainer.children).map(
+						(el) => el.id
+					);
+					if (tags.length === 0) {
+						alert("Selectează cel puțin un ETF înainte de antrenare.");
+						return;
+					}
+
+					const sortedTags = etfOrder.filter((etf) => tags.includes(etf));
+
+					fetch("http://127.0.0.1:8000/process", {
+						method: "POST",
+						headers: { "Content-Type": "application/json" },
+						body: JSON.stringify(sortedTags),
+					})
+						.then((res) => res.json())
+						.then((data) => {
+							const resultDiv = document.getElementById("result-list");
+							const ul = document.getElementById("results-ul");
+							ul.innerHTML = "";
+
+							data.forEach((value, idx) => {
+								const li = document.createElement("li");
+								li.textContent = `${sortedTags[idx]}: ${(value * 100).toFixed(
+									2
+								)}%`;
+								ul.appendChild(li);
+							});
+
+							resultDiv.style.display = "block";
+						})
+						.catch((err) => {
+							console.error(err);
+							alert("Eroare la antrenare.");
+						});
+				});
 		</script>
 	</body>
 </html>

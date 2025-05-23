@@ -15,5 +15,5 @@ def make_graph(df: pd.DataFrame):
         plt.ylabel("Price")
         plt.grid(True)
 
-        plt.savefig(f"../images/{col}.png", dpi=300, bbox_inches="tight")
+        plt.savefig(f"../page/images/{col}.png", dpi=300, bbox_inches="tight")
         plt.close()
