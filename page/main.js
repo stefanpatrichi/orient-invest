@@ -1,26 +1,15 @@
 function updateImage() {
-const select = document.getElementById("etf-select");
-const chart = document.getElementById("etf-chart");
-const selected = select.value;
+    const select = document.getElementById("etf-select");
+    const chart = document.getElementById("etf-chart");
+    const selected = select.value;
 
-// const imageMap = {
-// 	etf1: "chart1.png",
-// 	etf2: "chart2.png",
-// 	etf3: "chart3.png",
-// };
-
-// chart.src = imageMap[selected] || "chart1.png";
-
-chart.src = "images/" + selected + ".png";
-chart.style["display"] = "block";
-
-
-console.log(chart.src);
+    chart.src = "images/" + selected + ".png";
+    chart.style["display"] = "block";
 }
 
 function toggleMenu() {
-const menu = document.getElementById("mobileMenu");
-menu.classList.toggle("open");
+    const menu = document.getElementById("mobileMenu");
+    menu.classList.toggle("open");
 }
 
 const dropdown = document.getElementById("etf-dropdown");
@@ -37,24 +26,22 @@ if (!document.getElementById(value)) {
     tag.id = value;
     tag.innerHTML = `
         ${label}
-        <button onclick="removeEtf('${value}')">X</button>
+        <button onclick="removeEtf('${value}')"><img src="images/close.svg" width="15px" style="margin-top:5px;"></button>
     `;
     selectedEtfsContainer.appendChild(tag);
 }
 });
 
 function removeEtf(id) {
-const tag = document.getElementById(id);
-if (tag) tag.remove();
+    const tag = document.getElementById(id);
+    if (tag) tag.remove();
 }
 
 // Ia ETF-urile din lista
 fetch("http://127.0.0.1:8000/get_etfs", {
-method: "GET",
-headers: { "Content-Type": "application/json" },
-})
-.then((res) => res.json())
-.then((data) => {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+}).then((res) => res.json()).then((data) => {
     console.log("API răspuns:", data);
 
     etfOrder = data;
@@ -76,16 +63,13 @@ headers: { "Content-Type": "application/json" },
         option2.textContent = etf;
         select2.appendChild(option2);
     });
-})
-.catch((err) => {
+}).catch((err) => {
     console.error(err);
     alert("get_etfs error.");
 });
 
 //Script-ul pentru butonul de train
-document
-.getElementById("train-model-btn")
-.addEventListener("click", () => {
+document.getElementById("train-model-btn") .addEventListener("click", () => {
     const tags = Array.from(selectedEtfsContainer.children).map(
         (el) => el.id
     );

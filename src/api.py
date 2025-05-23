@@ -5,8 +5,6 @@ import uvicorn
 
 class APIServer:
     """
-    A simple API server that processes lists using a user-provided function.
-
     :param process_fn: Callable[[List[Any]], List[Any]] - Function to process incoming lists.
     :param allowed_origins: List[str] - CORS origins to allow.
     """
@@ -56,23 +54,4 @@ class APIServer:
     #         return result
 
     def run(self, host: str = "127.0.0.1", port: int = 8000):
-        """
-        Start the API server.
-
-        :param host: str - hostname to listen on
-        :param port: int - port number
-        """
         uvicorn.run(self.app, host=host, port=port)
-
-# Example usage in your main file:
-#
-# from api import APIServer
-#
-# def my_processing_function(data: List[Any]) -> List[Any]:
-#     # e.g., double each element if numeric
-#     return [x * 2 if isinstance(x, (int, float)) else x for x in data]
-#
-# if __name__ == "__main__":
-#     # Pass specific origins if needed, e.g. ["http://localhost:5500"]
-#     server = APIServer(process_fn=my_processing_function, allowed_origins=["http://127.0.0.1:5500"])
-#     server.run(host="0.0.0.0", port=8000)
