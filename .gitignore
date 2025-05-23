@@ -176,3 +176,5 @@ cython_debug/
 .h5
 .json
 .png
+.DS_Store
+.python-version
