@@ -178,3 +178,12 @@ cython_debug/
 .DS_Store
 .python-version
 .vscode/
+
+.aux
+.fdb_latexmk
+.fls
+.nav
+.out
+.snm
+.synctex.gz
+.toc
