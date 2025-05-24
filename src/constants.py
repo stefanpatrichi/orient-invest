@@ -4,7 +4,7 @@ SYMBOLS = [
     {"name": "TVBETETF.RO", "currency": "RON", "country": "RO", "title": "BET Tradeville"},
     {"name": "ROX.DE",      "currency": "EUR", "country": "RO", "title": "Expat Romania BET - BK UCITS"},
     {"name": "EPOL",        "currency": "USD", "country": "PL", "title": "iShares MSCI Poland"},
-    {"name": "IPOLL.XC",    "currency": "USD", "country": "PL", "title": "iShares MSCI Poland UCITS"},
+    # {"name": "IPOLL.XC",    "currency": "USD", "country": "PL", "title": "iShares MSCI Poland UCITS"},
     {"name": "PLX.DE",      "currency": "EUR", "country": "PL", "title": "Expat Poland WIG20 UCITS"},
     {"name": "BGX.DE",      "currency": "EUR", "country": "BG", "title": "Expat Bulgaria SOFIX UCITS"},
     {"name": "LEER.DE",     "currency": "EUR", "country": "EU", "title": "Amundi MSCI Eastern Europe Ex Russia UCITS"},

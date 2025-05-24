@@ -83,7 +83,7 @@ fetch("http://127.0.0.1:8000/get_etfs")
 
 document.getElementById("train-model-btn").addEventListener("click", async () => {
     const tags = Array.from(selectedEtfsContainer.children).map(el => el.id);
-    if (tags.length < 1) { alert("Selectează cel puțin două ETF-uri înainte de antrenare."); return; }
+    if (tags.length < 2) { alert("Selectează cel puțin două ETF-uri înainte de antrenare."); return; }
     const sortedTags = etfOrder.filter(etf => tags.includes(etf));
     const data = await fetch("http://127.0.0.1:8000/process", {
         method: "POST",

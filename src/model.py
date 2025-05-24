@@ -28,7 +28,7 @@ class Model:
 
         def sharpe_loss(_, y_pred):
             data = tf.divide(self.data, self.data[0])  # shape: (window_size, assets)
-            # broadcast y_pred (1, assets) across time axis
+            # y_pred (1, assets)
             port_vals = tf.reduce_sum(data * y_pred[0], axis=1)
 
             #returns = (port_vals[1:] - port_vals[:-1]) / (port_vals[:-1] + 1e-8)
@@ -56,10 +56,9 @@ class Model:
         last_prices = price_df.values[-self.window_size:]
         self.data = tf.cast(tf.constant(last_prices), tf.float32)
 
-        # dummy targets
         y = np.zeros((len(X), price_df.shape[1]))
 
-        split = int(0.9 * len(X))
+        split = int(0.8 * len(X))
         X_train, X_val = X[:split], X[split:]
         y_train, y_val = y[:split], y[split:]
 
@@ -83,13 +82,12 @@ class Model:
         )
 
         last_window = X[-1:]
+        #last_window = X[-2:-1]
         weights = self.model.predict(last_window, batch_size=1)[0]
 
-        # calculate return on investment
         roi_individual = (price_df.values[-1] * weights - price_df.values[-self.window_size] * weights) / (price_df.values[-self.window_size] * weights)
         roi = (tf.reduce_sum(price_df.values * weights, axis=1)[-1] - tf.reduce_sum(price_df.values * weights, axis=1)[-self.window_size]) / tf.reduce_sum(price_df.values * weights, axis=1)[-self.window_size]
 
-        # calculate sharpe
         y_pred = tf.constant(weights[np.newaxis, :], dtype=tf.float32)
         sharpe = -self.model.loss(None, y_pred)
 
