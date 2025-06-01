@@ -1,5 +1,8 @@
 from fastapi import FastAPI, Body, Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from pathlib import Path
 from typing import List, Any, Callable, Dict
 import uvicorn
 
@@ -21,8 +24,15 @@ class APIServer:
             allow_headers=["*"],
         )
         self._register_routes()
+        self._setup_static()
 
     def _register_routes(self):
+        # nu mai e necesar sa deschizi index.html, fisierul e servit de api
+        @self.app.get("/", response_class=HTMLResponse)
+        async def serve_index():
+            html_path = Path("../page/index.html")
+            return html_path.read_text(encoding="utf-8")
+
         @self.app.post("/process", response_model=Dict[Any, Any])
         async def process(payload: List[Any] = Body(...)):
             print("process")
@@ -34,7 +44,6 @@ class APIServer:
         # asta trebuie pus aici, ca altfel e singurul care poate fi accesat. (post-ul nu merge)
         @self.app.get("/get_etfs", response_model=List[Any])
         async def get_etfs():
-            print("get_etfs")
             result = self.get_etfs_fn()
             if not isinstance(result, list):
                 raise ValueError("get_etfs_fn must return a list")
@@ -42,21 +51,14 @@ class APIServer:
         
         @self.app.get("/get_etf_history", response_model=str)
         async def get_etf_history(etf: str = Query()):
-            print("get_etf_history")
             result = self.get_etf_history_fn(etf)
             if not isinstance(result, str):
                 raise ValueError("get_etf_history_fn must return a JSON string")
             return result
 
-    
-    # def _register_routes(self):
-    #     @self.app.get("/get_etfs", response_model=List[Any])
-    #     async def get_etfs():
-    #         print("get_etfs")
-    #         result = self.get_etfs_fn()
-    #         if not isinstance(result, list):
-    #             raise ValueError("get_etfs_fn must return a list")
-    #         return result
+    # dam mount la fisierele statice (js, css), complet independente fata de aplicatia python
+    def _setup_static(self):
+        self.app.mount("/static", StaticFiles(directory="../page"), name="static")
 
     def run(self, host: str = "127.0.0.1", port: int = 8000):
         uvicorn.run(self.app, host=host, port=port)

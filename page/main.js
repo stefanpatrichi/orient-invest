@@ -60,7 +60,7 @@ dropdown.addEventListener("change", () => {
         tag.innerHTML = `
             ${label}
             <button onclick="removeEtf('${value}')">
-                <img src="images/close.svg" width="15" style="margin-top:5px">
+                <img src="/static/images/close.svg" width="15" style="margin-top:5px">
             </button>`;
         selectedEtfsContainer.appendChild(tag);
     }

@@ -1,11 +1,8 @@
 from fetch import fetch, DATA_PATH
 from model import Model
 from api import APIServer
-# from graph import make_graph
 import pandas as pd
 import numpy as np
-# import webbrowser
-# import os
 
 # executa din folderul src!!
 
@@ -48,7 +45,6 @@ def process_request(etfs):
 def get_etfs():
     df = pd.read_json(DATA_PATH)
     df = df.drop(columns=["Date", "EURRON=X", "EURUSD=X"])
-    print(type(list(df.columns)))
     return list(df.columns)
 
 def get_etf_history(etf):
@@ -56,8 +52,6 @@ def get_etf_history(etf):
     return df[etf].interpolate().to_json()
 
 if __name__ == "__main__":
-    # webbrowser.open(f"{os.getcwd()}/../page/index.html")
-    # print(f"{os.getcwd()}/../page/index.html")
     fetch()
 
     server = APIServer(process_fn=process_request, get_etfs_fn=get_etfs, get_etf_history_fn=get_etf_history)

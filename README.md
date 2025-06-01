@@ -16,8 +16,6 @@ Apoi, instalați modulele din `requirements.txt`:
 $ pip3.11 install -r requirements.txt
 ```
 
-Rulați fișierele Python cu `python3.11`, sau `python3` pe MacOS (nu `python`).
-
 ## Funcționalități
 Deschideți serverul (`localhost` port `8000`):
 ```bash
