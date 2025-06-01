@@ -4,7 +4,6 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 from typing import List, Any, Callable, Dict
-import uvicorn
 
 class APIServer:
     def __init__(self, process_fn: Callable[[List[Any]], Dict[Any, Any]], get_etfs_fn: Callable, get_etf_history_fn: Callable[[str], str], allowed_origins: List[str] = None):
@@ -60,5 +59,5 @@ class APIServer:
     def _setup_static(self):
         self.app.mount("/static", StaticFiles(directory="../page"), name="static")
 
-    def run(self, host: str = "127.0.0.1", port: int = 8000):
-        uvicorn.run(self.app, host=host, port=port)
+    def get_app(self):
+        return self.app

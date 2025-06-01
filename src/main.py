@@ -3,6 +3,7 @@ from model import Model
 from api import APIServer
 import pandas as pd
 import numpy as np
+import uvicorn
 
 # executa din folderul src!!
 
@@ -51,8 +52,10 @@ def get_etf_history(etf):
     df = pd.read_json(DATA_PATH)
     return df[etf].interpolate().to_json()
 
+server = APIServer(process_fn=process_request, get_etfs_fn=get_etfs, get_etf_history_fn=get_etf_history)
+app = server.get_app()
+
 if __name__ == "__main__":
     fetch()
 
-    server = APIServer(process_fn=process_request, get_etfs_fn=get_etfs, get_etf_history_fn=get_etf_history)
-    server.run(host="127.0.0.1", port=8000)
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
