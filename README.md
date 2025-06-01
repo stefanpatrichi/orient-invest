@@ -22,13 +22,15 @@ $ pip3.11 install -r requirements.txt
 ```
 
 ## Funcționalități
-Deschideți serverul (`localhost` port `8000`):
+Din directorul `src/`, deschideți serverul (`localhost` port `8000`):
 ```bash
 $ cd src
 $ python3.11 main.py
 ```
 
-Accesați `http://localhost:8000/`. De acolo, puteți să vizualizați istoricul oricărui ETF ales din listă sau să alegeți mai multe ETF-uri, în vederea determinării proporțiilor optime pentru investiție. Butonul va începe antrenarea modelului de Deep Learning (care poate dura ceva timp), după care vor fi afișate ponderile.
+Accesați apoi [`http://localhost:8000/`](`http://localhost:8000/`). De acolo, puteți să vizualizați istoricul oricărui ETF ales din listă sau să alegeți mai multe ETF-uri, în vederea determinării proporțiilor optime pentru investiție. Butonul va începe antrenarea modelului de Deep Learning (care poate dura ceva timp), după care vor fi afișate ponderile.
 
 ## Dataset
+Datele sunt preluate de pe [Yahoo Finance](https://finance.yahoo.com/) folosind biblioteca [`yfinance`](https://github.com/ranaroussi/yfinance) și salvate în directorul `data/`, ca fișier `.json`, în formatul `YYYY-MM-DD_portfolio_data.json`.
+
 Pentru a schimba parametri precum numărul de zile din *time window*, doar ștergeți fișierul din `json` din `data`; el se va redescărca automat la rularea programului.
