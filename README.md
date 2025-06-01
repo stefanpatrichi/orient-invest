@@ -1,6 +1,6 @@
-## OrientInvest: Unealtă pentru optimizarea portofoliului de investiții în ETF-uri din zona Europei de Est
+# OrientInvest: Instrument pentru optimizarea portofoliului de investiții în ETF-uri din zona Europei de Est
 
-### Instalare
+## Instalare
 **Atenție! `tensorflow` necesită Python 3.11!** Pentru downgrade, folosiți `pyenv`:
 ```bash
 $ pyenv install 3.11
@@ -16,8 +16,15 @@ Apoi, instalați modulele din `requirements.txt`:
 $ pip3.11 install -r requirements.txt
 ```
 
-Rulați fișierele Python cu `python3.11` (nu `python` sau `python3`).
+Rulați fișierele Python cu `python3.11`, sau `python3` pe MacOS (nu `python`).
 
-### Dataset
+## Funcționalități
+Deschideți serverul (`localhost` port `8000`):
+```bash
+$ cd src
+$ python3.11 main.py
+```
+
+## Dataset
 Pentru a schimba parametri precum numărul de zile din *time window*, doar ștergeți fișierul din `json` din `data`; el se va
 redescărca automat la rularea programului.
